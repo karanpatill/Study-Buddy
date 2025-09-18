@@ -8,7 +8,6 @@ import {
   Star, 
   Trophy, 
   BookOpen,
-  Clock,
   Target,
   Plus
 } from 'lucide-react';
@@ -22,11 +21,21 @@ interface StudyBuddy {
   isOnline: boolean;
 }
 
+interface GroupMember {
+  _id: string;
+  user: {
+    _id: string;
+    name: string;
+  };
+  role: string;
+  joinedAt: string;
+}
+
 interface StudyGroup {
   _id: string;
   name: string;
   subject: string;
-  members: number;
+  members: GroupMember[];
   maxMembers: number;
   description: string;
 }
@@ -234,13 +243,21 @@ const Dashboard: React.FC = () => {
                       <h3 className="font-medium text-gray-900">{group.name}</h3>
                       <p className="text-sm text-gray-600 mb-2">{group.subject}</p>
                       <p className="text-xs text-gray-500 line-clamp-2">{group.description}</p>
+
+                      {/* Show group members with roles */}
+                      <p className="text-sm font-medium text-gray-900 mt-2">
+                        {group.members.length}/{group.maxMembers} members
+                      </p>
+                      <div className="mt-1 space-y-1">
+                        {group.members.map((m) => (
+                          <p key={m._id} className="text-xs text-gray-500">
+                            • {m.user?.name || "Unknown"} – {m.role}
+                          </p>
+                        ))}
+                      </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
-                        {group.members}/{group.maxMembers}
-                      </p>
-                      <p className="text-xs text-gray-500 mb-2">members</p>
-                      <button className="btn-secondary text-sm">Join</button>
+                      <button className="btn-secondary text-sm mt-2">Join</button>
                     </div>
                   </div>
                 </div>
