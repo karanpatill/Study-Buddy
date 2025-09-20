@@ -34,6 +34,8 @@ const server = createServer(app);
 // Setup dirname/filename for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+console.log('My MongoDB URI is:', process.env.MONGODB_URI); 
+console.log('My Session Secret is:', process.env.SESSION_SECRET);
 
 // Socket.io setup
 const io = new Server(server, {
