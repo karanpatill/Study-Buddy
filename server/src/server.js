@@ -8,7 +8,6 @@ import passport from 'passport';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -26,7 +25,8 @@ import { setupSocketHandlers } from './utils/socketHandlers.js';
 // Import passport configuration
 import './config/passport.js';
 
-dotenv.config();
+// NOTE: dotenv is removed from this file because it's loaded via the start command
+// in package.json ('-r dotenv/config'), which is a more reliable method.
 
 const app = express();
 const server = createServer(app);
@@ -34,15 +34,11 @@ const server = createServer(app);
 // Setup dirname/filename for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-console.log('My MongoDB URI is:', process.env.MONGODB_URI); 
-console.log('My Session Secret is:', process.env.SESSION_SECRET);
 
 // Socket.io setup
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' 
-      ? process.env.CLIENT_URL 
-      : "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST"]
   },
@@ -50,111 +46,97 @@ const io = new Server(server, {
   allowEIO3: true
 });
 
-// Security middleware
-app.use(helmet({
-  contentSecurityPolicy: false // Allow Socket.IO
-}));
+// --- MIDDLEWARE SETUP ---
+app.use(helmet({ contentSecurityPolicy: false })); // Allow Socket.IO scripts
 
-// Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, 
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again later.'
 });
-app.use('/api/', limiter);
 
-// CORS
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CLIENT_URL 
-    : "http://localhost:5173",
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
   credentials: true
 }));
 
-// Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI , {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// --- DATABASE & SESSION SETUP ---
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
-mongoose.connection.on('connected', () => {
-  console.log('✅ Connected to MongoDB');
-});
-mongoose.connection.on('error', (err) => {
-  console.error('❌ MongoDB connection error:', err);
-});
-
-// Session config
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/studybuddy'
-  }),
+  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000 
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
-// Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// API routes
+
+// ===================================================
+// --- ROUTING ---
+// ===================================================
+
+// ✅ 1. API ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/matching', matchingRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/gamification', gamificationRoutes);
-
-// Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString()
   });
 });
 
-// ✅ Serve frontend in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
+// ✅ 2. 404 HANDLER FOR UNMATCHED API ROUTES
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ message: 'API endpoint not found' });
+});
 
+// ✅ 3. SERVE FRONTEND FOR ALL OTHER ROUTES (PRODUCTION ONLY)
+if (process.env.NODE_ENV === 'production') {
+  // Correctly points to the 'dist' folder inside the server directory
+  app.use(express.static(path.join(__dirname, 'dist')));
+
+  // For any request that doesn't match a route above, send back index.html
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
 
-// Socket.IO setup
+// ===================================================
+// --- SERVER INITIALIZATION ---
+// ===================================================
+
+// Socket.IO handlers
 setupSocketHandlers(io);
 
-// Error handler
+// Main error handler
 app.use((err, req, res, next) => {
-  console.error('❌ Error:', err);
-  res.status(500).json({ 
-    message: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
-      : err.message 
+  console.error('❌ Global Error Handler:', err);
+  res.status(500).json({
+    message: 'An internal server error occurred.'
   });
-});
-
-// 404 API handler (only for API, frontend handled above)
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ message: 'API endpoint not found' });
 });
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
 });
 
 export default app;
