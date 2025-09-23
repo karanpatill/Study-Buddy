@@ -10,6 +10,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -27,7 +29,7 @@ import './config/passport.js';
 
 // NOTE: dotenv is removed from this file because it's loaded via the start command
 // in package.json ('-r dotenv/config'), which is a more reliable method.
-
+console.log('My MongoDB URI is:', process.env.MONGODB_URI);
 const app = express();
 const server = createServer(app);
 
@@ -114,6 +116,7 @@ if (process.env.NODE_ENV === 'production') {
 
   // For any request that doesn't match a route above, send back index.html
   app.get('*', (req, res) => {
+   
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
   });
 }
@@ -136,6 +139,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🔗 Client URL: ${process.env.CLIENT_URL || "http://localhost:5173"}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
 });
 
