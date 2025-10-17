@@ -28,6 +28,15 @@ export const setupSocketHandlers = (io) => {
         connectedUsers.set(socket.id, userId);
         socket.userId = userId;
         
+        // Track user sockets for notifications
+        if (!userSockets.has(userId)) {
+          userSockets.set(userId, new Set());
+        }
+        userSockets.get(userId).add(socket.id);
+        
+        // Join user's personal notification room
+        socket.join(`user:${userId}`);
+        
         // Update user's online status
         await User.findByIdAndUpdate(userId, { lastActive: new Date() });
         
