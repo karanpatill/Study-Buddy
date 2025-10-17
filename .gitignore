@@ -22,3 +22,7 @@ node_modules
 *.sln
 *.sw?
 .env
+-e 
+# Environment files
+*.env
+*.env.*
