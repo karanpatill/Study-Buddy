@@ -1,15 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { 
-  Home, 
-  MessageCircle, 
-  User, 
-  Trophy, 
-  LogOut,
-  BookOpen,
-  Star
-} from 'lucide-react';
+import { Hop as Home, MessageCircle, User, Trophy, LogOut, BookOpen, Star, Zap } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -35,58 +27,85 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="w-64 bg-white shadow-sm border-r border-gray-200">
+    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Futuristic Sidebar */}
+      <div className="w-72 card-glass m-4 mr-0 rounded-r-none border-r-0">
         {/* Logo */}
-        <div className="flex items-center px-6 py-4 border-b border-gray-200">
-          <BookOpen className="h-8 w-8 text-primary-500 mr-3" />
-          <h1 className="text-xl font-bold text-gray-900">Study Buddy</h1>
+        <div className="flex items-center px-6 py-6 border-b border-white/10">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 animate-glow">
+            <BookOpen className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-white">Study Buddy</h1>
+            <p className="text-xs text-white/60">AI-Powered Learning</p>
+          </div>
         </div>
 
         {/* User Info */}
-        <div className="px-6 py-4 border-b border-gray-200">
+        <div className="px-6 py-6 border-b border-white/10">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-              <User className="h-5 w-5 text-primary-600" />
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center animate-pulse-glow">
+              <User className="h-6 w-6 text-white" />
             </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-              <div className="flex items-center">
+            <div className="ml-4">
+              <p className="text-sm font-semibold text-white">{user?.name}</p>
+              <div className="flex items-center mt-1">
                 <Star className="h-3 w-3 text-yellow-400 mr-1" />
-                <p className="text-xs text-gray-500">{user?.points} points</p>
+                <p className="text-xs text-white/70">{user?.points} points</p>
+                <div className="ml-2 flex items-center">
+                  <Zap className="h-3 w-3 text-purple-400 mr-1" />
+                  <p className="text-xs text-white/70">Level {user?.level}</p>
+                </div>
               </div>
+            </div>
+          </div>
+          
+          {/* Level Progress Bar */}
+          <div className="mt-4">
+            <div className="flex justify-between text-xs text-white/60 mb-1">
+              <span>Level {user?.level}</span>
+              <span>Level {(user?.level || 1) + 1}</span>
+            </div>
+            <div className="w-full bg-white/10 rounded-full h-2">
+              <div 
+                className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-500"
+                style={{ width: `${((user?.points || 0) % 1000) / 10}%` }}
+              ></div>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="px-4 py-4">
-          {navigation.map((item) => {
+        <nav className="px-4 py-6 flex-1">
+          {navigation.map((item, index) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.href;
             return (
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium mb-1 transition-colors duration-200 ${
+                className={`flex items-center px-4 py-3 rounded-xl text-sm font-medium mb-2 transition-all duration-300 animate-fade-in-up ${
                   isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white border border-white/20 shadow-glow'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
                 }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <Icon className="h-5 w-5 mr-3" />
                 {item.name}
+                {isActive && (
+                  <div className="ml-auto w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-pulse"></div>
+                )}
               </Link>
             );
           })}
         </nav>
 
         {/* Logout */}
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="px-4 pb-6">
           <button
             onClick={handleLogout}
-            className="flex items-center w-full px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-200"
+            className="flex items-center w-full px-4 py-3 rounded-xl text-sm font-medium text-white/70 hover:text-white hover:bg-red-500/20 transition-all duration-300 border border-transparent hover:border-red-500/30"
           >
             <LogOut className="h-5 w-5 mr-3" />
             Logout
@@ -96,7 +115,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden">
-        <main className="h-full overflow-y-auto">
+        <main className="h-full overflow-y-auto bg-white/5 backdrop-blur-sm m-4 ml-0 rounded-2xl border border-white/10">
           {children}
         </main>
       </div>

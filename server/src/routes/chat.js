@@ -2,8 +2,6 @@ import express from 'express';
 import { Chat, Message } from '../models/Chat.js';
 import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
-import { uploadChatFile, getFileType } from '../utils/fileUpload.js';
-import Notification from '../models/Notification.js';
 
 const router = express.Router();
 
@@ -177,7 +175,7 @@ router.get('/:chatId/messages', requireAuth, async (req, res) => {
 
 /**
  * @route POST /api/chats/:chatId/messages
- * @desc Send a message to a chat (text or file)
+ * @desc Send a message to a chat
  */
 router.post('/:chatId/messages', requireAuth, async (req, res) => {
   try {
@@ -219,24 +217,7 @@ router.post('/:chatId/messages', requireAuth, async (req, res) => {
     await chat.save();
     
     // Populate sender info
-    await message.populate('sender', 'name profilePicture');
-    
-    // Create notifications for other participants
-    const otherParticipants = chat.participants.filter(
-      p => p.toString() !== userId.toString()
-    );
-    
-    for (const participantId of otherParticipants) {
-      await Notification.createNotification({
-        recipient: participantId,
-        sender: userId,
-        type: 'message',
-        title: 'New Message',
-        message: `${req.user.name}: ${content.slice(0, 50)}${content.length > 50 ? '...' : ''}`,
-        data: { chatId, messageId: message._id },
-        actionUrl: `/chat/${chatId}`
-      });
-    }
+    await message.populate('sender', 'name');
     
     res.status(201).json(message);
     
@@ -244,88 +225,6 @@ router.post('/:chatId/messages', requireAuth, async (req, res) => {
     console.error('Send message error:', error);
     res.status(500).json({ message: 'Error sending message' });
   }
-});
-
-/**
- * @route POST /api/chats/:chatId/upload
- * @desc Upload a file to a chat
- */
-router.post('/:chatId/upload', requireAuth, (req, res) => {
-  uploadChatFile(req, res, async (err) => {
-    try {
-      const { chatId } = req.params;
-      const userId = req.user._id;
-
-      if (err) {
-        return res.status(400).json({ message: err.message });
-      }
-
-      if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' });
-      }
-
-      // Verify user is participant in chat
-      const chat = await Chat.findOne({
-        _id: chatId,
-        participants: userId
-      });
-
-      if (!chat) {
-        return res.status(404).json({ message: 'Chat not found or access denied' });
-      }
-
-      // Determine file type
-      const fileType = getFileType(req.file.filename);
-
-      // Create message with file attachment
-      const message = new Message({
-        chat: chatId,
-        sender: userId,
-        content: req.body.caption || `Sent a ${fileType}`,
-        chatType: chat.chatType,
-        fileUrl: `/uploads/chat-files/${req.file.filename}`,
-        fileName: req.file.originalname,
-        fileType: fileType,
-        fileSize: req.file.size
-      });
-
-      await message.save();
-
-      // Update chat's last message and activity
-      chat.lastMessage = {
-        content: `📎 ${req.file.originalname}`,
-        sender: userId,
-        timestamp: new Date()
-      };
-      chat.lastActivity = new Date();
-      await chat.save();
-
-      // Populate sender info
-      await message.populate('sender', 'name profilePicture');
-
-      // Create notifications for other participants
-      const otherParticipants = chat.participants.filter(
-        p => p.toString() !== userId.toString()
-      );
-
-      for (const participantId of otherParticipants) {
-        await Notification.createNotification({
-          recipient: participantId,
-          sender: userId,
-          type: 'message',
-          title: 'New File',
-          message: `${req.user.name} sent a file: ${req.file.originalname}`,
-          data: { chatId, messageId: message._id, fileType },
-          actionUrl: `/chat/${chatId}`
-        });
-      }
-
-      res.status(201).json(message);
-    } catch (error) {
-      console.error('File upload error:', error);
-      res.status(500).json({ message: 'Error uploading file' });
-    }
-  });
 });
 
 /**

@@ -20,7 +20,6 @@ interface SocketContextType {
   joinChat: (chatId: string) => void;
   sendMessage: (chatId: string, content: string, chatType: 'direct' | 'group') => void;
   clearMessages: () => void;
-  isConnected: boolean;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -38,77 +37,44 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (user) {
-      console.log('Connecting to socket server...');
-      
-      const newSocket = io('/', {
-        withCredentials: true,
-        transports: ['websocket', 'polling']
+      const newSocket = io('http://localhost:5000', {
+        auth: {
+          userId: user._id
+        }
       });
 
       newSocket.on('connect', () => {
-        console.log('Connected to server with ID:', newSocket.id);
-        setIsConnected(true);
-        
-        // Authenticate with the server
-        newSocket.emit('authenticate', { userId: user._id });
-      });
-
-      newSocket.on('disconnect', () => {
-        console.log('Disconnected from server');
-        setIsConnected(false);
+        console.log('Connected to server');
       });
 
       newSocket.on('message', (message: Message) => {
-        console.log('Received message:', message);
         setMessages(prev => [...prev, message]);
       });
 
       newSocket.on('onlineUsers', (users: string[]) => {
-        console.log('Online users updated:', users);
         setOnlineUsers(users);
-      });
-
-      newSocket.on('error', (error: any) => {
-        console.error('Socket error:', error);
-      });
-
-      newSocket.on('achievement', (achievement: any) => {
-        console.log('Achievement unlocked:', achievement);
-        // You can add a toast notification here
       });
 
       setSocket(newSocket);
 
       return () => {
-        console.log('Cleaning up socket connection');
         newSocket.close();
-        setSocket(null);
-        setIsConnected(false);
       };
     }
   }, [user]);
 
   const joinChat = (chatId: string) => {
-    if (socket && isConnected) {
-      console.log('Joining chat:', chatId);
+    if (socket) {
       socket.emit('joinChat', chatId);
-      // Clear previous messages when joining a new chat
-      setMessages([]);
-    } else {
-      console.warn('Socket not connected, cannot join chat');
     }
   };
 
   const sendMessage = (chatId: string, content: string, chatType: 'direct' | 'group') => {
-    if (socket && isConnected) {
-      console.log('Sending message to chat:', chatId, content);
+    if (socket) {
       socket.emit('sendMessage', { chatId, content, chatType });
-    } else {
-      console.warn('Socket not connected, cannot send message');
     }
   };
 
@@ -122,8 +88,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     onlineUsers,
     joinChat,
     sendMessage,
-    clearMessages,
-    isConnected
+    clearMessages
   };
 
   return (

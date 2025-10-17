@@ -86,33 +86,13 @@ const Message = mongoose.model('Message', new mongoose.Schema({
   },
   content: {
     type: String,
-    required: function() {
-      return !this.fileUrl; // Content required if no file
-    },
+    required: true,
     maxlength: 1000
   },
   chatType: {
     type: String,
     enum: ['direct', 'group'],
     required: true
-  },
-  // File attachment support
-  fileUrl: {
-    type: String,
-    default: null
-  },
-  fileName: {
-    type: String,
-    default: null
-  },
-  fileType: {
-    type: String,
-    enum: ['image', 'document', 'video', 'audio', 'other'],
-    default: null
-  },
-  fileSize: {
-    type: Number,
-    default: null
   },
   // Read receipts
   readBy: [{

@@ -1,16 +1,12 @@
 import { Chat, Message } from '../models/Chat.js';
 import User from '../models/User.js';
-import Notification from '../models/Notification.js';
 
-const connectedUsers = new Map(); // Store socket connections: socketId -> userId
-const userSockets = new Map(); // Store user sockets: userId -> Set of socketIds
+const connectedUsers = new Map(); // Store socket connections
 
 /**
  * Set up Socket.IO event handlers
  */
 export const setupSocketHandlers = (io) => {
-  console.log('Setting up Socket.IO handlers...');
-  
   io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
     
@@ -28,15 +24,6 @@ export const setupSocketHandlers = (io) => {
         connectedUsers.set(socket.id, userId);
         socket.userId = userId;
         
-        // Track user sockets for notifications
-        if (!userSockets.has(userId)) {
-          userSockets.set(userId, new Set());
-        }
-        userSockets.get(userId).add(socket.id);
-        
-        // Join user's personal notification room
-        socket.join(`user:${userId}`);
-        
         // Update user's online status
         await User.findByIdAndUpdate(userId, { lastActive: new Date() });
         
@@ -44,7 +31,6 @@ export const setupSocketHandlers = (io) => {
         broadcastOnlineUsers(io);
         
         console.log(`User ${userId} authenticated and connected`);
-        socket.emit('authenticated', { success: true });
         
       } catch (error) {
         console.error('Authentication error:', error);
@@ -59,8 +45,6 @@ export const setupSocketHandlers = (io) => {
           socket.emit('error', { message: 'Authentication required' });
           return;
         }
-        
-        console.log(`User ${socket.userId} attempting to join chat ${chatId}`);
         
         // Verify user has access to this chat
         const chat = await Chat.findOne({
@@ -84,21 +68,7 @@ export const setupSocketHandlers = (io) => {
         socket.join(chatId);
         socket.currentChatId = chatId;
         
-        // Load and send recent messages
-        const messages = await Message.find({ chat: chatId })
-          .populate('sender', 'name')
-          .sort({ createdAt: -1 })
-          .limit(50);
-        
-        // Reverse to show oldest first
-        messages.reverse();
-        
-        // Send messages to the user
-        messages.forEach(message => {
-          socket.emit('message', message);
-        });
-        
-        console.log(`User ${socket.userId} joined chat ${chatId} and received ${messages.length} messages`);
+        console.log(`User ${socket.userId} joined chat ${chatId}`);
         
       } catch (error) {
         console.error('Join chat error:', error);
@@ -120,8 +90,6 @@ export const setupSocketHandlers = (io) => {
           socket.emit('error', { message: 'Message content is required' });
           return;
         }
-        
-        console.log(`User ${socket.userId} sending message to chat ${chatId}: ${content}`);
         
         // Verify user has access to this chat
         const chat = await Chat.findOne({
@@ -156,12 +124,10 @@ export const setupSocketHandlers = (io) => {
         // Populate sender information
         await message.populate('sender', 'name');
         
-        console.log(`Message saved and populated: ${message._id}`);
-        
         // Emit message to all participants in the chat
         io.to(chatId).emit('message', message);
         
-        // Award points for sending messages (first message only)
+        // Award points for sending messages
         const user = await User.findById(socket.userId);
         if (user && !user.badges.includes('Communicator')) {
           const leveledUp = user.addPoints(25);
@@ -176,7 +142,7 @@ export const setupSocketHandlers = (io) => {
           });
         }
         
-        console.log(`Message sent successfully in chat ${chatId}`);
+        console.log(`Message sent in chat ${chatId} by user ${socket.userId}`);
         
       } catch (error) {
         console.error('Send message error:', error);
@@ -237,14 +203,6 @@ export const setupSocketHandlers = (io) => {
           // Remove from connected users
           connectedUsers.delete(socket.id);
           
-          // Remove from user sockets
-          if (userSockets.has(userId)) {
-            userSockets.get(userId).delete(socket.id);
-            if (userSockets.get(userId).size === 0) {
-              userSockets.delete(userId);
-            }
-          }
-          
           // Emit updated online users list
           broadcastOnlineUsers(io);
           
@@ -268,7 +226,6 @@ export const setupSocketHandlers = (io) => {
  */
 const broadcastOnlineUsers = (io) => {
   const onlineUserIds = Array.from(connectedUsers.values());
-  console.log(`Broadcasting online users: ${onlineUserIds.length} users`);
   io.emit('onlineUsers', onlineUserIds);
 };
 
@@ -284,22 +241,4 @@ export const getOnlineUsers = () => {
  */
 export const isUserOnline = (userId) => {
   return Array.from(connectedUsers.values()).includes(userId);
-};
-
-/**
- * Send notification to specific user via Socket.IO
- */
-export const sendNotificationToUser = (io, userId, notification) => {
-  const room = `user:${userId}`;
-  io.to(room).emit('notification', notification);
-  console.log(`Notification sent to user ${userId}:`, notification.title);
-};
-
-/**
- * Send notification to multiple users
- */
-export const sendNotificationToUsers = (io, userIds, notification) => {
-  userIds.forEach(userId => {
-    sendNotificationToUser(io, userId, notification);
-  });
 };

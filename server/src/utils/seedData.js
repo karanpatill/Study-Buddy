@@ -7,7 +7,7 @@ import { Chat, Message } from '../models/Chat.js';
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/studybuddy';
 
 /**
  * Sample data for seeding the database
@@ -235,24 +235,6 @@ const createChats = async (users) => {
           sender: users[4]._id,
           timestamp: new Date()
         }
-      },
-      {
-        participants: [users[2]._id, users[3]._id],
-        chatType: 'direct',
-        lastMessage: {
-          content: 'Psychology study session tomorrow?',
-          sender: users[2]._id,
-          timestamp: new Date()
-        }
-      },
-      {
-        participants: [users[3]._id, users[4]._id],
-        chatType: 'direct',
-        lastMessage: {
-          content: 'Economics homework help needed!',
-          sender: users[3]._id,
-          timestamp: new Date()
-        }
       }
     ];
     
@@ -274,12 +256,6 @@ const createChats = async (users) => {
         chatType: 'direct'
       },
       {
-        chat: createdChats[0]._id,
-        sender: users[0]._id,
-        content: 'Perfect! I can help with that. When are you free?',
-        chatType: 'direct'
-      },
-      {
         chat: createdChats[1]._id,
         sender: users[1]._id,
         content: 'How\'s your chemistry study going?',
@@ -292,12 +268,6 @@ const createChats = async (users) => {
         chatType: 'direct'
       },
       {
-        chat: createdChats[1]._id,
-        sender: users[1]._id,
-        content: 'I have some great resources that might help!',
-        chatType: 'direct'
-      },
-      {
         chat: createdChats[2]._id,
         sender: users[4]._id,
         content: 'Let\'s work on that computer science project',
@@ -307,30 +277,6 @@ const createChats = async (users) => {
         chat: createdChats[2]._id,
         sender: users[0]._id,
         content: 'Great idea! When are you available?',
-        chatType: 'direct'
-      },
-      {
-        chat: createdChats[3]._id,
-        sender: users[2]._id,
-        content: 'Psychology study session tomorrow?',
-        chatType: 'direct'
-      },
-      {
-        chat: createdChats[3]._id,
-        sender: users[3]._id,
-        content: 'Yes! What time works for you?',
-        chatType: 'direct'
-      },
-      {
-        chat: createdChats[4]._id,
-        sender: users[3]._id,
-        content: 'Economics homework help needed!',
-        chatType: 'direct'
-      },
-      {
-        chat: createdChats[4]._id,
-        sender: users[4]._id,
-        content: 'I can help! What specific topics?',
         chatType: 'direct'
       }
     ];
@@ -397,7 +343,8 @@ const seedDatabase = async () => {
 };
 
 // Run seeding if called directly
-seedDatabase();
-
+if (import.meta.url === `file://${process.argv[1]}`) {
+  seedDatabase();
+}
 
 export default seedDatabase;
