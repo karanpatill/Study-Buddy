@@ -134,13 +134,18 @@ Create a `.env` file in the `server` directory:
 
 ```env
 # Required
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=mongodb://localhost:27017/studybuddy
 SESSION_SECRET=your_secure_session_secret
+
+# AI Integration (for recommendations)
+EMERGENT_LLM_KEY=your_emergent_llm_key
 
 # Optional
 NODE_ENV=development
 PORT=5000
 CLIENT_URL=http://localhost:5173
+MAX_FILE_SIZE=10485760
+UPLOAD_DIR=uploads
 ```
 
 ### MongoDB Atlas Setup
