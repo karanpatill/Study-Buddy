@@ -8,15 +8,21 @@ A comprehensive full-stack web application that connects students with compatibl
 - **Authentication System**: Secure email/password login and registration
 - **Smart Dashboard**: View study matches, groups, and personal statistics
 - **Real-time Chat**: One-on-one and group messaging with Socket.IO
-- **Profile Management**: Set subjects, goals, and study schedules
+- **File Sharing**: Upload and share files in chats (images, documents, videos)
+- **Profile Management**: Set subjects, goals, schedules, bio, skills, and portfolio
+- **Profile Pictures**: Upload and display custom profile pictures
 - **Gamification**: Points, badges, levels, and leaderboard system
+- **AI Recommendations**: Get AI-powered study partner suggestions and personalized study plans
+- **Real-time Notifications**: Instant notifications for messages, invites, achievements, and more
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 
 ### Backend (Node.js + Express)
 - **RESTful API**: Comprehensive endpoints for all features
 - **Authentication**: Passport.js with local strategy
-- **Real-time Communication**: Socket.IO for instant messaging
+- **Real-time Communication**: Socket.IO for instant messaging and notifications
 - **Smart Matching Algorithm**: Compatible study partner suggestions
+- **AI Integration**: OpenAI GPT-4o-mini for intelligent recommendations
+- **File Upload**: Multer for handling profile pictures and chat file attachments
 - **Database Management**: MongoDB with Mongoose ODM
 - **Security**: Rate limiting, CORS, and secure sessions
 
@@ -27,12 +33,25 @@ A comprehensive full-stack web application that connects students with compatibl
   - Compatible schedules (30% weight)
 - **Study Groups**: Create and join subject-specific study groups
 - **Real-time Messaging**: Instant chat with typing indicators and read receipts
+- **File Sharing**: Share documents, images, and other files in chats
+- **AI Features**:
+  - Personalized study partner recommendations with AI explanations
+  - Custom study plan generation based on your profile
+  - Smart study suggestions based on activity
+- **Notification System**:
+  - Real-time push notifications via Socket.IO
+  - Notification types: messages, invites, achievements, reminders, mentions
+  - Unread count tracking
 - **Gamification System**: 
   - Points for various activities
   - Achievement badges
   - Level progression
   - Global leaderboard
-- **Profile Customization**: Detailed preferences for optimal matching
+- **Enhanced Profiles**: 
+  - Profile picture upload
+  - Bio and skills
+  - Portfolio links
+  - Detailed preferences for optimal matching
 
 ## 🚀 Quick Start
 
@@ -115,13 +134,18 @@ Create a `.env` file in the `server` directory:
 
 ```env
 # Required
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=mongodb://localhost:27017/studybuddy
 SESSION_SECRET=your_secure_session_secret
+
+# AI Integration (for recommendations)
+EMERGENT_LLM_KEY=your_emergent_llm_key
 
 # Optional
 NODE_ENV=development
 PORT=5000
 CLIENT_URL=http://localhost:5173
+MAX_FILE_SIZE=10485760
+UPLOAD_DIR=uploads
 ```
 
 ### MongoDB Atlas Setup
@@ -144,6 +168,7 @@ CLIENT_URL=http://localhost:5173
 - `GET /api/profile` - Get user profile
 - `PUT /api/profile` - Update user profile
 - `GET /api/profile/:userId` - Get public profile
+- `POST /api/profile/picture` - Upload profile picture
 
 ### Study Matching
 - `GET /api/matching/matches` - Get compatible study partners
@@ -155,6 +180,8 @@ CLIENT_URL=http://localhost:5173
 - `POST /api/chats/direct` - Create direct chat
 - `POST /api/chats/group` - Create group chat
 - `GET /api/chats/:id/messages` - Get chat messages
+- `POST /api/chats/:id/messages` - Send message
+- `POST /api/chats/:id/upload` - Upload file to chat
 
 ### Study Groups
 - `GET /api/groups` - Get study groups
@@ -166,6 +193,18 @@ CLIENT_URL=http://localhost:5173
 - `GET /api/gamification/leaderboard` - Get leaderboard
 - `POST /api/gamification/award-points` - Award points
 - `GET /api/gamification/achievements` - Get achievements
+
+### Notifications
+- `GET /api/notifications` - Get all notifications
+- `GET /api/notifications/unread-count` - Get unread count
+- `PATCH /api/notifications/:id/read` - Mark as read
+- `PATCH /api/notifications/read-all` - Mark all as read
+- `DELETE /api/notifications/:id` - Delete notification
+
+### AI Features
+- `GET /api/ai/partners` - Get AI-powered partner recommendations
+- `GET /api/ai/study-plan` - Get personalized study plan
+- `GET /api/ai/suggestions` - Get smart study suggestions
 
 ## 🎮 Gamification System
 
@@ -264,16 +303,50 @@ If you encounter any issues:
 3. Ensure all dependencies are installed correctly
 4. Verify environment variables are configured properly
 
+## 🎯 Recent Enhancements (New!)
+
+### 1. Enhanced Profile System
+- **Profile Pictures**: Upload custom profile pictures (JPEG, PNG, GIF, WEBP up to 5MB)
+- **Extended Profiles**: Add bio, skills list, and portfolio links
+- **Visual Identity**: Profile pictures displayed across the app in chats, matches, and groups
+
+### 2. File Sharing in Chats
+- **Multi-format Support**: Share images, PDFs, documents, videos, and audio files
+- **File Preview**: Image thumbnails and file metadata in chat
+- **Secure Upload**: Files up to 10MB with automatic type detection
+- **Download Links**: Easy access to shared files
+
+### 3. AI-Powered Features
+- **Smart Partner Matching**: Get AI-generated recommendations with personalized explanations
+- **Study Plan Generation**: Receive custom weekly study plans based on your profile
+- **Intelligent Suggestions**: Get actionable study tips based on your activity
+- **Powered by GPT-4o-mini**: Using OpenAI's latest model for accurate insights
+
+### 4. Real-time Notification System
+- **Instant Alerts**: Real-time notifications via Socket.IO
+- **Multiple Types**: Messages, invites, achievements, reminders, and mentions
+- **Unread Tracking**: Keep track of unread notifications
+- **Action URLs**: Quick navigation to relevant content
+- **Mark as Read**: Individual or bulk read status management
+
+### 5. Production-Ready Improvements
+- **File Management**: Organized upload structure with dedicated directories
+- **Error Handling**: Comprehensive error handling across all new features
+- **Security**: File type validation and size limits
+- **Scalability**: Efficient notification delivery and file storage
+
+---
+
 ## 🎯 Future Enhancements
 
-- Video calling integration
-- Calendar scheduling
-- File sharing capabilities
+- ~~Video calling integration~~ (Coming soon with Daily.co)
+- ~~Calendar scheduling~~ (Planned)
 - Mobile app development
-- AI-powered study recommendations
+- ~~AI-powered study recommendations~~ ✅ IMPLEMENTED
 - Study session tracking
 - Progress analytics
 - Social media integration
+- Cloud file storage (AWS S3/Cloudinary) for production
 
 ---
 

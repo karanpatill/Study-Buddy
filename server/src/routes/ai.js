@@ -1,12 +1,12 @@
 import express from 'express';
 import User from '../models/User.js';
 import aiService from '../utils/aiService.js';
-import { isAuthenticated } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get AI-powered study partner recommendations
-router.get('/partners', isAuthenticated, async (req, res) => {
+router.get('/partners', requireAuth, async (req, res) => {
   try {
     const currentUser = await User.findById(req.user._id);
 
@@ -49,7 +49,7 @@ router.get('/partners', isAuthenticated, async (req, res) => {
 });
 
 // Get personalized study plan
-router.get('/study-plan', isAuthenticated, async (req, res) => {
+router.get('/study-plan', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     const studyPlan = await aiService.generateStudyPlan(user);
@@ -62,7 +62,7 @@ router.get('/study-plan', isAuthenticated, async (req, res) => {
 });
 
 // Get smart study suggestions
-router.get('/suggestions', isAuthenticated, async (req, res) => {
+router.get('/suggestions', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 

@@ -28,6 +28,15 @@ export const setupSocketHandlers = (io) => {
         connectedUsers.set(socket.id, userId);
         socket.userId = userId;
         
+        // Track user sockets for notifications
+        if (!userSockets.has(userId)) {
+          userSockets.set(userId, new Set());
+        }
+        userSockets.get(userId).add(socket.id);
+        
+        // Join user's personal notification room
+        socket.join(`user:${userId}`);
+        
         // Update user's online status
         await User.findByIdAndUpdate(userId, { lastActive: new Date() });
         
@@ -228,6 +237,14 @@ export const setupSocketHandlers = (io) => {
           // Remove from connected users
           connectedUsers.delete(socket.id);
           
+          // Remove from user sockets
+          if (userSockets.has(userId)) {
+            userSockets.get(userId).delete(socket.id);
+            if (userSockets.get(userId).size === 0) {
+              userSockets.delete(userId);
+            }
+          }
+          
           // Emit updated online users list
           broadcastOnlineUsers(io);
           
@@ -267,4 +284,22 @@ export const getOnlineUsers = () => {
  */
 export const isUserOnline = (userId) => {
   return Array.from(connectedUsers.values()).includes(userId);
+};
+
+/**
+ * Send notification to specific user via Socket.IO
+ */
+export const sendNotificationToUser = (io, userId, notification) => {
+  const room = `user:${userId}`;
+  io.to(room).emit('notification', notification);
+  console.log(`Notification sent to user ${userId}:`, notification.title);
+};
+
+/**
+ * Send notification to multiple users
+ */
+export const sendNotificationToUsers = (io, userIds, notification) => {
+  userIds.forEach(userId => {
+    sendNotificationToUser(io, userId, notification);
+  });
 };

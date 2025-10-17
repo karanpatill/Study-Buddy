@@ -22,6 +22,8 @@ import matchingRoutes from "./routes/matching.js";
 import chatRoutes from "./routes/chat.js";
 import groupRoutes from "./routes/group.js";
 import gamificationRoutes from "./routes/gamification.js";
+import notificationsRoutes from "./routes/notifications.js";
+import aiRoutes from "./routes/ai.js";
 
 // --- Import socket handlers ---
 import { setupSocketHandlers } from "./utils/socketHandlers.js";
@@ -101,6 +103,9 @@ app.use(passport.session());
 // --- ROUTING ---
 // ===================================================
 
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // ✅ API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
@@ -108,6 +113,8 @@ app.use("/api/matching", matchingRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/gamification", gamificationRoutes);
+app.use("/api/notifications", notificationsRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
@@ -138,6 +145,9 @@ if (process.env.NODE_ENV === "production") {
 
 // Socket.IO handlers
 setupSocketHandlers(io);
+
+// Make io instance available globally
+export { io };
 
 // Global error handler
 app.use((err, req, res, next) => {

@@ -1,11 +1,11 @@
 import express from 'express';
 import Notification from '../models/Notification.js';
-import { isAuthenticated } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get all notifications for current user
-router.get('/', isAuthenticated, async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
     const notifications = await Notification.find({ recipient: req.user._id })
       .populate('sender', 'name profilePicture')
@@ -20,7 +20,7 @@ router.get('/', isAuthenticated, async (req, res) => {
 });
 
 // Get unread notification count
-router.get('/unread-count', isAuthenticated, async (req, res) => {
+router.get('/unread-count', requireAuth, async (req, res) => {
   try {
     const count = await Notification.getUnreadCount(req.user._id);
     res.json({ count });
@@ -31,7 +31,7 @@ router.get('/unread-count', isAuthenticated, async (req, res) => {
 });
 
 // Mark notification as read
-router.patch('/:notificationId/read', isAuthenticated, async (req, res) => {
+router.patch('/:notificationId/read', requireAuth, async (req, res) => {
   try {
     const notification = await Notification.findOne({
       _id: req.params.notificationId,
@@ -51,7 +51,7 @@ router.patch('/:notificationId/read', isAuthenticated, async (req, res) => {
 });
 
 // Mark all notifications as read
-router.patch('/read-all', isAuthenticated, async (req, res) => {
+router.patch('/read-all', requireAuth, async (req, res) => {
   try {
     await Notification.markAllAsRead(req.user._id);
     res.json({ message: 'All notifications marked as read' });
@@ -62,7 +62,7 @@ router.patch('/read-all', isAuthenticated, async (req, res) => {
 });
 
 // Delete notification
-router.delete('/:notificationId', isAuthenticated, async (req, res) => {
+router.delete('/:notificationId', requireAuth, async (req, res) => {
   try {
     const notification = await Notification.findOneAndDelete({
       _id: req.params.notificationId,
