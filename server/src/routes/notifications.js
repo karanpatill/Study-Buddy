@@ -31,7 +31,7 @@ router.get('/unread-count', requireAuth, async (req, res) => {
 });
 
 // Mark notification as read
-router.patch('/:notificationId/read', isAuthenticated, async (req, res) => {
+router.patch('/:notificationId/read', requireAuth, async (req, res) => {
   try {
     const notification = await Notification.findOne({
       _id: req.params.notificationId,
