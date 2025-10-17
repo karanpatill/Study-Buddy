@@ -1,7 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
 import aiService from '../utils/aiService.js';
-import { isAuthenticated } from '../middleware/auth.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
