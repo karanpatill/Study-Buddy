@@ -1,6 +1,8 @@
 import express from 'express';
 import User from '../models/User.js';
 import { requireAuth } from '../middleware/auth.js';
+import { uploadProfilePicture } from '../utils/fileUpload.js';
+import Notification from '../models/Notification.js';
 
 const router = express.Router();
 
