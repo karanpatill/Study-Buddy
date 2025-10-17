@@ -22,6 +22,8 @@ import matchingRoutes from "./routes/matching.js";
 import chatRoutes from "./routes/chat.js";
 import groupRoutes from "./routes/group.js";
 import gamificationRoutes from "./routes/gamification.js";
+import notificationsRoutes from "./routes/notifications.js";
+import aiRoutes from "./routes/ai.js";
 
 // --- Import socket handlers ---
 import { setupSocketHandlers } from "./utils/socketHandlers.js";
