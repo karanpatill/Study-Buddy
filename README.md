@@ -8,15 +8,21 @@ A comprehensive full-stack web application that connects students with compatibl
 - **Authentication System**: Secure email/password login and registration
 - **Smart Dashboard**: View study matches, groups, and personal statistics
 - **Real-time Chat**: One-on-one and group messaging with Socket.IO
-- **Profile Management**: Set subjects, goals, and study schedules
+- **File Sharing**: Upload and share files in chats (images, documents, videos)
+- **Profile Management**: Set subjects, goals, schedules, bio, skills, and portfolio
+- **Profile Pictures**: Upload and display custom profile pictures
 - **Gamification**: Points, badges, levels, and leaderboard system
+- **AI Recommendations**: Get AI-powered study partner suggestions and personalized study plans
+- **Real-time Notifications**: Instant notifications for messages, invites, achievements, and more
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 
 ### Backend (Node.js + Express)
 - **RESTful API**: Comprehensive endpoints for all features
 - **Authentication**: Passport.js with local strategy
-- **Real-time Communication**: Socket.IO for instant messaging
+- **Real-time Communication**: Socket.IO for instant messaging and notifications
 - **Smart Matching Algorithm**: Compatible study partner suggestions
+- **AI Integration**: OpenAI GPT-4o-mini for intelligent recommendations
+- **File Upload**: Multer for handling profile pictures and chat file attachments
 - **Database Management**: MongoDB with Mongoose ODM
 - **Security**: Rate limiting, CORS, and secure sessions
 
@@ -27,12 +33,25 @@ A comprehensive full-stack web application that connects students with compatibl
   - Compatible schedules (30% weight)
 - **Study Groups**: Create and join subject-specific study groups
 - **Real-time Messaging**: Instant chat with typing indicators and read receipts
+- **File Sharing**: Share documents, images, and other files in chats
+- **AI Features**:
+  - Personalized study partner recommendations with AI explanations
+  - Custom study plan generation based on your profile
+  - Smart study suggestions based on activity
+- **Notification System**:
+  - Real-time push notifications via Socket.IO
+  - Notification types: messages, invites, achievements, reminders, mentions
+  - Unread count tracking
 - **Gamification System**: 
   - Points for various activities
   - Achievement badges
   - Level progression
   - Global leaderboard
-- **Profile Customization**: Detailed preferences for optimal matching
+- **Enhanced Profiles**: 
+  - Profile picture upload
+  - Bio and skills
+  - Portfolio links
+  - Detailed preferences for optimal matching
 
 ## 🚀 Quick Start
 
