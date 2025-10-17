@@ -19,6 +19,23 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  profilePicture: {
+    type: String,
+    default: null
+  },
+  bio: {
+    type: String,
+    maxlength: 500,
+    default: ''
+  },
+  skills: [{
+    type: String,
+    trim: true
+  }],
+  portfolio: {
+    type: String,
+    default: ''
+  },
   subjects: [{
     type: String,
     trim: true
