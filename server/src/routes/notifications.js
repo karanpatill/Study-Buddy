@@ -20,7 +20,7 @@ router.get('/', requireAuth, async (req, res) => {
 });
 
 // Get unread notification count
-router.get('/unread-count', isAuthenticated, async (req, res) => {
+router.get('/unread-count', requireAuth, async (req, res) => {
   try {
     const count = await Notification.getUnreadCount(req.user._id);
     res.json({ count });
