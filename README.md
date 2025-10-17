@@ -168,6 +168,7 @@ UPLOAD_DIR=uploads
 - `GET /api/profile` - Get user profile
 - `PUT /api/profile` - Update user profile
 - `GET /api/profile/:userId` - Get public profile
+- `POST /api/profile/picture` - Upload profile picture
 
 ### Study Matching
 - `GET /api/matching/matches` - Get compatible study partners
@@ -179,6 +180,8 @@ UPLOAD_DIR=uploads
 - `POST /api/chats/direct` - Create direct chat
 - `POST /api/chats/group` - Create group chat
 - `GET /api/chats/:id/messages` - Get chat messages
+- `POST /api/chats/:id/messages` - Send message
+- `POST /api/chats/:id/upload` - Upload file to chat
 
 ### Study Groups
 - `GET /api/groups` - Get study groups
@@ -190,6 +193,18 @@ UPLOAD_DIR=uploads
 - `GET /api/gamification/leaderboard` - Get leaderboard
 - `POST /api/gamification/award-points` - Award points
 - `GET /api/gamification/achievements` - Get achievements
+
+### Notifications
+- `GET /api/notifications` - Get all notifications
+- `GET /api/notifications/unread-count` - Get unread count
+- `PATCH /api/notifications/:id/read` - Mark as read
+- `PATCH /api/notifications/read-all` - Mark all as read
+- `DELETE /api/notifications/:id` - Delete notification
+
+### AI Features
+- `GET /api/ai/partners` - Get AI-powered partner recommendations
+- `GET /api/ai/study-plan` - Get personalized study plan
+- `GET /api/ai/suggestions` - Get smart study suggestions
 
 ## 🎮 Gamification System
 
