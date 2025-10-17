@@ -6,7 +6,7 @@ import { requireAuth } from '../middleware/auth.js';
 const router = express.Router();
 
 // Get AI-powered study partner recommendations
-router.get('/partners', isAuthenticated, async (req, res) => {
+router.get('/partners', requireAuth, async (req, res) => {
   try {
     const currentUser = await User.findById(req.user._id);
 
