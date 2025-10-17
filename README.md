@@ -303,16 +303,50 @@ If you encounter any issues:
 3. Ensure all dependencies are installed correctly
 4. Verify environment variables are configured properly
 
+## 🎯 Recent Enhancements (New!)
+
+### 1. Enhanced Profile System
+- **Profile Pictures**: Upload custom profile pictures (JPEG, PNG, GIF, WEBP up to 5MB)
+- **Extended Profiles**: Add bio, skills list, and portfolio links
+- **Visual Identity**: Profile pictures displayed across the app in chats, matches, and groups
+
+### 2. File Sharing in Chats
+- **Multi-format Support**: Share images, PDFs, documents, videos, and audio files
+- **File Preview**: Image thumbnails and file metadata in chat
+- **Secure Upload**: Files up to 10MB with automatic type detection
+- **Download Links**: Easy access to shared files
+
+### 3. AI-Powered Features
+- **Smart Partner Matching**: Get AI-generated recommendations with personalized explanations
+- **Study Plan Generation**: Receive custom weekly study plans based on your profile
+- **Intelligent Suggestions**: Get actionable study tips based on your activity
+- **Powered by GPT-4o-mini**: Using OpenAI's latest model for accurate insights
+
+### 4. Real-time Notification System
+- **Instant Alerts**: Real-time notifications via Socket.IO
+- **Multiple Types**: Messages, invites, achievements, reminders, and mentions
+- **Unread Tracking**: Keep track of unread notifications
+- **Action URLs**: Quick navigation to relevant content
+- **Mark as Read**: Individual or bulk read status management
+
+### 5. Production-Ready Improvements
+- **File Management**: Organized upload structure with dedicated directories
+- **Error Handling**: Comprehensive error handling across all new features
+- **Security**: File type validation and size limits
+- **Scalability**: Efficient notification delivery and file storage
+
+---
+
 ## 🎯 Future Enhancements
 
-- Video calling integration
-- Calendar scheduling
-- File sharing capabilities
+- ~~Video calling integration~~ (Coming soon with Daily.co)
+- ~~Calendar scheduling~~ (Planned)
 - Mobile app development
-- AI-powered study recommendations
+- ~~AI-powered study recommendations~~ ✅ IMPLEMENTED
 - Study session tracking
 - Progress analytics
 - Social media integration
+- Cloud file storage (AWS S3/Cloudinary) for production
 
 ---
 
