@@ -285,3 +285,21 @@ export const getOnlineUsers = () => {
 export const isUserOnline = (userId) => {
   return Array.from(connectedUsers.values()).includes(userId);
 };
+
+/**
+ * Send notification to specific user via Socket.IO
+ */
+export const sendNotificationToUser = (io, userId, notification) => {
+  const room = `user:${userId}`;
+  io.to(room).emit('notification', notification);
+  console.log(`Notification sent to user ${userId}:`, notification.title);
+};
+
+/**
+ * Send notification to multiple users
+ */
+export const sendNotificationToUsers = (io, userIds, notification) => {
+  userIds.forEach(userId => {
+    sendNotificationToUser(io, userId, notification);
+  });
+};
