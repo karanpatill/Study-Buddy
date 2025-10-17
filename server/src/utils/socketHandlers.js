@@ -237,6 +237,14 @@ export const setupSocketHandlers = (io) => {
           // Remove from connected users
           connectedUsers.delete(socket.id);
           
+          // Remove from user sockets
+          if (userSockets.has(userId)) {
+            userSockets.get(userId).delete(socket.id);
+            if (userSockets.get(userId).size === 0) {
+              userSockets.delete(userId);
+            }
+          }
+          
           // Emit updated online users list
           broadcastOnlineUsers(io);
           
