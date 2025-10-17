@@ -79,6 +79,21 @@ router.put('/', requireAuth, async (req, res) => {
       user.schedule = new Map(Object.entries(schedule));
     }
     
+    // Update new profile fields
+    if (bio !== undefined) {
+      user.bio = bio.trim();
+    }
+    
+    if (skills && Array.isArray(skills)) {
+      user.skills = skills.filter(skill => 
+        typeof skill === 'string' && skill.trim().length > 0
+      );
+    }
+    
+    if (portfolio !== undefined) {
+      user.portfolio = portfolio.trim();
+    }
+    
     // Calculate profile completion and check for new achievements
     const completionScore = user.calculateProfileCompletion();
     
