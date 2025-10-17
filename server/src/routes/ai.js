@@ -49,7 +49,7 @@ router.get('/partners', requireAuth, async (req, res) => {
 });
 
 // Get personalized study plan
-router.get('/study-plan', isAuthenticated, async (req, res) => {
+router.get('/study-plan', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     const studyPlan = await aiService.generateStudyPlan(user);
