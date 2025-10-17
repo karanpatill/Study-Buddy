@@ -146,6 +146,9 @@ if (process.env.NODE_ENV === "production") {
 // Socket.IO handlers
 setupSocketHandlers(io);
 
+// Make io instance available globally
+export { io };
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error("❌ Global Error Handler:", err);
