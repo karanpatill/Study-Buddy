@@ -62,7 +62,7 @@ router.patch('/read-all', requireAuth, async (req, res) => {
 });
 
 // Delete notification
-router.delete('/:notificationId', isAuthenticated, async (req, res) => {
+router.delete('/:notificationId', requireAuth, async (req, res) => {
   try {
     const notification = await Notification.findOneAndDelete({
       _id: req.params.notificationId,
