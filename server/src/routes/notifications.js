@@ -5,7 +5,7 @@ import { requireAuth } from '../middleware/auth.js';
 const router = express.Router();
 
 // Get all notifications for current user
-router.get('/', isAuthenticated, async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
     const notifications = await Notification.find({ recipient: req.user._id })
       .populate('sender', 'name profilePicture')
