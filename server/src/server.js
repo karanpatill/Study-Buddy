@@ -103,6 +103,9 @@ app.use(passport.session());
 // --- ROUTING ---
 // ===================================================
 
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // ✅ API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
@@ -110,6 +113,8 @@ app.use("/api/matching", matchingRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/gamification", gamificationRoutes);
+app.use("/api/notifications", notificationsRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {
