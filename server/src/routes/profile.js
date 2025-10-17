@@ -168,14 +168,56 @@ router.get('/:userId', requireAuth, async (req, res) => {
 });
 
 /**
+ * @route POST /api/profile/picture
+ * @desc Upload profile picture
+ */
+router.post('/picture', requireAuth, (req, res) => {
+  uploadProfilePicture(req, res, async (err) => {
+    try {
+      if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Save file path (relative to uploads directory)
+      user.profilePicture = `/uploads/profiles/${req.file.filename}`;
+      await user.save();
+
+      // Create notification for achievement
+      await Notification.createNotification({
+        recipient: user._id,
+        type: 'badge_earned',
+        title: 'Profile Updated!',
+        message: 'You\'ve added a profile picture!',
+        data: { badge: 'profile_picture' }
+      });
+
+      res.json({
+        message: 'Profile picture uploaded successfully',
+        profilePicture: user.profilePicture
+      });
+    } catch (error) {
+      console.error('Profile picture upload error:', error);
+      res.status(500).json({ message: 'Failed to upload profile picture' });
+    }
+  });
+});
+
+/**
  * @route POST /api/profile/avatar
- * @desc Update user's avatar (placeholder for future implementation)
+ * @desc Update user's avatar (legacy endpoint)
  */
 router.post('/avatar', requireAuth, (req, res) => {
-  // This would handle avatar upload in a real application
-  res.status(501).json({ 
-    message: 'Avatar upload not implemented yet' 
-  });
+  // Redirect to new picture endpoint
+  res.redirect(307, '/api/profile/picture');
 });
 
 export default router;
