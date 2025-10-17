@@ -1,7 +1,9 @@
 import { Chat, Message } from '../models/Chat.js';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 
-const connectedUsers = new Map(); // Store socket connections
+const connectedUsers = new Map(); // Store socket connections: socketId -> userId
+const userSockets = new Map(); // Store user sockets: userId -> Set of socketIds
 
 /**
  * Set up Socket.IO event handlers
