@@ -37,7 +37,7 @@ router.get('/', requireAuth, async (req, res) => {
  */
 router.put('/', requireAuth, async (req, res) => {
   try {
-    const { name, subjects, goals, schedule } = req.body;
+    const { name, subjects, goals, schedule, bio, skills, portfolio } = req.body;
     const userId = req.user._id;
     
     // Validation
