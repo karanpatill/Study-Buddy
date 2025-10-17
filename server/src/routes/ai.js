@@ -62,7 +62,7 @@ router.get('/study-plan', requireAuth, async (req, res) => {
 });
 
 // Get smart study suggestions
-router.get('/suggestions', isAuthenticated, async (req, res) => {
+router.get('/suggestions', requireAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
