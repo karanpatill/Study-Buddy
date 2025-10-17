@@ -51,7 +51,7 @@ router.patch('/:notificationId/read', requireAuth, async (req, res) => {
 });
 
 // Mark all notifications as read
-router.patch('/read-all', isAuthenticated, async (req, res) => {
+router.patch('/read-all', requireAuth, async (req, res) => {
   try {
     await Notification.markAllAsRead(req.user._id);
     res.json({ message: 'All notifications marked as read' });
