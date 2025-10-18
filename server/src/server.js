@@ -12,21 +12,14 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Import auto-setup utilities
 import { autoSetupDatabase } from './utils/autoSetup.js';
-
-// Import routes
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import matchingRoutes from './routes/matching.js';
 import chatRoutes from './routes/chat.js';
 import groupRoutes from './routes/group.js';
 import gamificationRoutes from './routes/gamification.js';
-
-// Import socket handlers
 import { setupSocketHandlers } from './utils/socketHandlers.js';
-
-// Import passport configuration
 import './config/passport.js';
 
 dotenv.config();
@@ -46,18 +39,17 @@ const io = new Server(server, {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 🛡️ Security middleware
+// 🛡️ Security
 app.use(
   helmet({
-    contentSecurityPolicy: false, // Allow Socket.IO
+    contentSecurityPolicy: false,
   })
 );
 
-// ⚙️ Rate limiting
+// ⚙️ Rate limit
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000,
   max: 100,
-  message: 'Too many requests from this IP, please try again later.',
 });
 app.use('/api/', limiter);
 
@@ -72,12 +64,12 @@ app.use(
   })
 );
 
-// 🧩 Body parsers
+// 🧩 Body parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 🗄️ MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/studybuddy', {
+// 🗄️ MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -87,23 +79,23 @@ mongoose.connection.on('connected', () => {
   autoSetupDatabase();
 });
 
-mongoose.connection.on('error', (err) => {
-  console.error('❌ MongoDB connection error:', err);
-});
+// 🧠 TRUST PROXY — ⚠️ required for Render / HTTPS cookies
+app.set('trust proxy', 1);
 
-// 🍪 Session setup
+// 🍪 Session
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/studybuddy',
+      mongoUrl: process.env.MONGODB_URI,
     }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production', // ✅ cookies only over HTTPS
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // ✅ allow frontend/backend same domain
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -112,7 +104,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 🧭 API Routes
+// 🧭 Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/matching', matchingRoutes);
@@ -124,23 +116,18 @@ app.use('/api/gamification', gamificationRoutes);
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
+    environment: process.env.NODE_ENV,
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
   });
 });
 
-// ⚡ Socket.IO setup
+// ⚡ Socket.IO
 setupSocketHandlers(io);
 
 // 🧱 Serve frontend
-const frontendPath =
-  process.env.NODE_ENV === 'production'
-    ? path.join(__dirname, './dist') // Render/Railway build
-    : path.join(__dirname, './dist'); // Local dist (if testing)
-
+const frontendPath = path.join(__dirname, './dist');
 app.use(express.static(frontendPath));
 
-// Catch-all for React Router (non-API routes)
 app.get('*', (req, res) => {
   if (req.originalUrl.startsWith('/api')) {
     res.status(404).json({ message: 'API endpoint not found' });
@@ -163,10 +150,10 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Backend: http://localhost:${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+  console.log(`🔗 Backend: ${process.env.CLIENT_URL}`);
   if (process.env.NODE_ENV === 'production') {
-    console.log('📦 Serving frontend from src/dist');
+    console.log('📦 Serving frontend from dist');
   }
 });
 
