@@ -19,10 +19,23 @@ interface Chat {
   };
 }
 
+// Define the Message interface (you might want to move this to a shared types file)
+interface Message {
+  _id: string;
+  sender: {
+    _id: string;
+    name: string;
+  };
+  content: string;
+  timestamp: Date;
+  chatType: 'direct' | 'group';
+}
+
 const Chat: React.FC = () => {
   const { chatId } = useParams();
   const { user } = useAuth();
-  const { socket, messages, sendMessage, joinChat, onlineUsers } = useSocket();
+  // --- FIX: Import clearMessages ---
+  const { socket, messages, sendMessage, joinChat, onlineUsers, clearMessages } = useSocket();
 
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<Chat | null>(null);
@@ -42,11 +55,14 @@ const Chat: React.FC = () => {
     if (chatId && chats.length > 0) {
       const chat = chats.find(c => c._id === chatId);
       if (chat) {
+        // --- FIX: Clear messages before joining new chat ---
+        clearMessages();
         setActiveChat(chat);
         joinChat(chatId);
       }
     }
-  }, [chatId, chats, joinChat]);
+    // --- FIX: Add clearMessages to dependency array ---
+  }, [chatId, chats, joinChat, clearMessages]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -77,6 +93,8 @@ const Chat: React.FC = () => {
       const response = await axios.get('/api/chats', { withCredentials: true });
       setChats(response.data);
       if (!chatId && response.data.length > 0) {
+        // --- FIX: Clear messages before joining default chat ---
+        clearMessages();
         setActiveChat(response.data[0]);
         joinChat(response.data[0]._id);
       }
@@ -144,6 +162,8 @@ const Chat: React.FC = () => {
               <div
                 key={chat._id}
                 onClick={() => {
+                  // --- FIX: Clear messages on click ---
+                  clearMessages();
                   setActiveChat(chat);
                   joinChat(chat._id);
                   window.history.pushState({}, '', `/chat/${chat._id}`);
@@ -162,9 +182,9 @@ const Chat: React.FC = () => {
                       <p className="font-semibold text-white truncate">{getChatName(chat)}</p>
                       {chat.chatType === 'direct' && (
                         <div className={`w-2 h-2 rounded-full ${
-                          isUserOnline(chat.participants.find(p => p._id !== user?._id)?._id || '') 
-                          ? 'bg-green-400 animate-pulse' 
-                          : 'bg-gray-500'
+                          isUserOnline(chat.participants.find(p => p._id !== user?._id)?._id || '')
+                            ? 'bg-green-400 animate-pulse'
+                            : 'bg-gray-500'
                         }`}></div>
                       )}
                     </div>
@@ -193,8 +213,8 @@ const Chat: React.FC = () => {
                 {activeChat.chatType === 'direct' && (
                   <p className="text-sm text-white/60 flex items-center">
                     <div className={`w-2 h-2 rounded-full mr-2 ${
-                      isUserOnline(activeChat.participants.find(p => p._id !== user?._id)?._id || '') 
-                        ? 'bg-green-400 animate-pulse' 
+                      isUserOnline(activeChat.participants.find(p => p._id !== user?._id)?._id || '')
+                        ? 'bg-green-400 animate-pulse'
                         : 'bg-gray-500'
                     }`}></div>
                     {isUserOnline(activeChat.participants.find(p => p._id !== user?._id)?._id || '') ? 'Online' : 'Offline'}
@@ -217,7 +237,7 @@ const Chat: React.FC = () => {
                   <p className="text-white/50 text-sm">Start the conversation and break the ice!</p>
                 </div>
               ) : (
-                messages.map((message, index) => {
+                messages.map((message: Message, index) => { // <-- Explicitly type message
                   const isOwnMessage = message.sender._id === user?._id;
                   return (
                     <div

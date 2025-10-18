@@ -61,6 +61,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setConnected(false);
     });
 
+    // --- FIX: Listen for chat history ---
+    newSocket.on('chatHistory', (history: Message[]) => {
+      setMessages(history);
+    });
+    // --- END OF FIX ---
+
     newSocket.on('message', (message: Message) => {
       setMessages((prev) => [...prev, message]);
     });
@@ -72,6 +78,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setSocket(newSocket);
 
     return () => {
+      // --- FIX: Clean up listener ---
+      newSocket.off('chatHistory');
+      // --- END OF FIX ---
       newSocket.close();
     };
   }, [user]);
