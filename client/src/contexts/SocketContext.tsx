@@ -4,10 +4,7 @@ import { useAuth } from './AuthContext';
 
 interface Message {
   _id: string;
-  sender: {
-    _id: string;
-    name: string;
-  };
+  sender: { _id: string; name: string };
   content: string;
   timestamp: Date;
   chatType: 'direct' | 'group';
@@ -17,19 +14,17 @@ interface SocketContextType {
   socket: Socket | null;
   messages: Message[];
   onlineUsers: string[];
+  connected: boolean;
   joinChat: (chatId: string) => void;
   sendMessage: (chatId: string, content: string, chatType: 'direct' | 'group') => void;
   clearMessages: () => void;
-  connected: boolean; // ✅ added
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
 
 export const useSocket = () => {
   const context = useContext(SocketContext);
-  if (!context) {
-    throw new Error('useSocket must be used within a SocketProvider');
-  }
+  if (!context) throw new Error('useSocket must be used within a SocketProvider');
   return context;
 };
 
@@ -38,70 +33,62 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
-  const [connected, setConnected] = useState(false); // ✅ added state
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      const backendUrl =
-        import.meta.env.MODE === 'production'
-          ? 'https://study-buddy-yitq.onrender.com'
-          : 'http://localhost:5000';
+    if (!user) return;
 
-      const newSocket = io(backendUrl, {
-        auth: { userId: user._id },
-        withCredentials: true,
-        transports: ['websocket'],
-      });
+    // Use environment variable for backend URL, fallback to localhost
+    const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-      newSocket.on('connect', () => {
-        console.log('✅ Connected to server');
-        setConnected(true);
-      });
+    const newSocket = io(backendUrl, {
+      auth: { userId: user._id },
+      transports: ['websocket'], // force WebSocket
+    });
 
-      newSocket.on('disconnect', () => {
-        console.log('❌ Disconnected from server');
-        setConnected(false);
-      });
+    newSocket.on('connect', () => {
+      console.log('✅ Connected to Socket.IO server');
+      setConnected(true);
+    });
 
-      newSocket.on('message', (message: Message) => {
-        setMessages(prev => [...prev, message]);
-      });
+    newSocket.on('disconnect', () => {
+      console.log('⚠️ Disconnected from Socket.IO server');
+      setConnected(false);
+    });
 
-      newSocket.on('onlineUsers', (users: string[]) => {
-        setOnlineUsers(users);
-      });
+    newSocket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+      setConnected(false);
+    });
 
-      setSocket(newSocket);
+    newSocket.on('message', (message: Message) => {
+      setMessages((prev) => [...prev, message]);
+    });
 
-      return () => {
-        newSocket.close();
-      };
-    }
+    newSocket.on('onlineUsers', (users: string[]) => {
+      setOnlineUsers(users);
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
   }, [user]);
 
   const joinChat = (chatId: string) => {
-    socket?.emit('joinChat', chatId);
+    if (socket) socket.emit('joinChat', chatId);
   };
 
   const sendMessage = (chatId: string, content: string, chatType: 'direct' | 'group') => {
-    socket?.emit('sendMessage', { chatId, content, chatType });
+    if (socket) socket.emit('sendMessage', { chatId, content, chatType });
   };
 
-  const clearMessages = () => {
-    setMessages([]);
-  };
+  const clearMessages = () => setMessages([]);
 
   return (
     <SocketContext.Provider
-      value={{
-        socket,
-        messages,
-        onlineUsers,
-        joinChat,
-        sendMessage,
-        clearMessages,
-        connected, // ✅ provide connected status
-      }}
+      value={{ socket, messages, onlineUsers, connected, joinChat, sendMessage, clearMessages }}
     >
       {children}
     </SocketContext.Provider>
