@@ -20,6 +20,7 @@ interface SocketContextType {
   joinChat: (chatId: string) => void;
   sendMessage: (chatId: string, content: string, chatType: 'direct' | 'group') => void;
   clearMessages: () => void;
+  connected: boolean; // ✅ added
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -37,17 +38,29 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+  const [connected, setConnected] = useState(false); // ✅ added state
 
   useEffect(() => {
     if (user) {
-      const newSocket = io('http://localhost:5000', {
-        auth: {
-          userId: user._id
-        }
+      const backendUrl =
+        import.meta.env.MODE === 'production'
+          ? 'https://study-buddy-yitq.onrender.com'
+          : 'http://localhost:5000';
+
+      const newSocket = io(backendUrl, {
+        auth: { userId: user._id },
+        withCredentials: true,
+        transports: ['websocket'],
       });
 
       newSocket.on('connect', () => {
-        console.log('Connected to server');
+        console.log('✅ Connected to server');
+        setConnected(true);
+      });
+
+      newSocket.on('disconnect', () => {
+        console.log('❌ Disconnected from server');
+        setConnected(false);
       });
 
       newSocket.on('message', (message: Message) => {
@@ -67,32 +80,29 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [user]);
 
   const joinChat = (chatId: string) => {
-    if (socket) {
-      socket.emit('joinChat', chatId);
-    }
+    socket?.emit('joinChat', chatId);
   };
 
   const sendMessage = (chatId: string, content: string, chatType: 'direct' | 'group') => {
-    if (socket) {
-      socket.emit('sendMessage', { chatId, content, chatType });
-    }
+    socket?.emit('sendMessage', { chatId, content, chatType });
   };
 
   const clearMessages = () => {
     setMessages([]);
   };
 
-  const value = {
-    socket,
-    messages,
-    onlineUsers,
-    joinChat,
-    sendMessage,
-    clearMessages
-  };
-
   return (
-    <SocketContext.Provider value={value}>
+    <SocketContext.Provider
+      value={{
+        socket,
+        messages,
+        onlineUsers,
+        joinChat,
+        sendMessage,
+        clearMessages,
+        connected, // ✅ provide connected status
+      }}
+    >
       {children}
     </SocketContext.Provider>
   );
