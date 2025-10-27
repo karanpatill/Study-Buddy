@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { BookOpen, Eye, EyeOff, Zap, Users, Star } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
@@ -37,7 +38,7 @@ const Login: React.FC = () => {
     setError('');
     try {
       await login('demo@studybuddy.com', 'demo123');
-    } catch (err: any) {
+    } catch {
       setError('Demo login failed');
     } finally {
       setLoading(false);
@@ -45,164 +46,154 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-tr from-gray-900 via-gray-950 to-gray-900 relative overflow-hidden">
-      {/* Background Glow Circles */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full opacity-20 filter blur-3xl animate-bounce-slow"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full opacity-20 filter blur-3xl animate-bounce-slow" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-20 left-1/2 w-80 h-80 bg-pink-500 rounded-full opacity-20 filter blur-3xl animate-bounce-slow" style={{ animationDelay: '4s' }}></div>
+    <div className="min-h-screen flex items-center justify-center px-6 py-10 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] relative overflow-hidden">
+      {/* ✨ Background Animation */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] animate-pulse-slow"></div>
       </div>
 
-      {/* Login Card */}
-      <div className="relative max-w-md w-full space-y-6">
-        <div className="card-glass p-8 rounded-2xl animate-fade-in-up">
-          {/* Logo */}
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4 animate-glow">
-              <BookOpen className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Study Buddy</h1>
-            <p className="text-white/70">{isLogin ? 'Welcome back!' : 'Create your account'}</p>
-          </div>
-
-          {/* Demo Login */}
-          <button
-            onClick={handleDemoLogin}
-            disabled={loading}
-            className="w-full btn-accent mb-6 flex items-center justify-center"
+      {/* 🌟 Main Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="relative z-10 w-full max-w-md md:max-w-lg lg:max-w-md p-8 md:p-10 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl"
+      >
+        {/* Header */}
+        <div className="text-center mb-8">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 shadow-lg shadow-blue-500/30 mb-4"
           >
-            <Zap className="h-4 w-4 mr-2" />
-            Try Demo Account
-          </button>
+            <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-white" />
+          </motion.div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">Study Buddy</h1>
+          <p className="text-white/70 text-sm md:text-base font-medium">
+            {isLogin ? 'Welcome back to your study world ✨' : 'Create your learning journey 🚀'}
+          </p>
+        </div>
 
-          {/* Divider */}
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/20"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-transparent text-white/60">or use email</span>
-            </div>
-          </div>
+        {/* Demo Login */}
+        <button
+          onClick={handleDemoLogin}
+          disabled={loading}
+          className="w-full py-3 rounded-xl mb-8 font-semibold text-white bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-indigo-500/30 flex items-center justify-center"
+        >
+          <Zap className="h-5 w-5 mr-2" />
+          Try Demo Account
+        </button>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {!isLogin && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-white/90 mb-2">
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Enter your full name"
-                  className="input-futuristic w-full"
-                  required
-                />
-              </div>
-            )}
+        {/* Divider */}
+        <div className="flex items-center mb-8">
+          <div className="flex-grow border-t border-white/10"></div>
+          <span className="px-4 text-white/50 text-sm">or continue with email</span>
+          <div className="flex-grow border-t border-white/10"></div>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {!isLogin && (
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2">
-                Email
+              <label htmlFor="name" className="block text-white/80 text-sm mb-2 font-medium">
+                Full Name
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
+                id="name"
+                name="name"
+                type="text"
+                value={formData.name}
                 onChange={handleInputChange}
-                placeholder="Enter your email"
-                className="input-futuristic w-full"
+                placeholder="John Doe"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                 required
               />
             </div>
+          )}
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white/90 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Enter your password"
-                  className="input-futuristic w-full pr-12"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white transition-colors"
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
-              </div>
-            </div>
+          <div>
+            <label htmlFor="email" className="block text-white/80 text-sm mb-2 font-medium">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="you@example.com"
+              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              required
+            />
+          </div>
 
-            {error && (
-              <div className="text-red-400 text-sm bg-red-500/10 p-3 rounded-xl border border-red-500/20">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full btn-primary py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {loading ? (
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  <span>{isLogin ? 'Signing in' : 'Creating account'}</span>
-                </div>
-              ) : (
-                <>
-                  <Zap className="h-5 w-5 mr-2" />
-                  {isLogin ? 'Sign In' : 'Sign Up'}
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Toggle Login/Register */}
-          <div className="mt-6 text-center">
-            <p className="text-white/70">
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
+          <div>
+            <label htmlFor="password" className="block text-white/80 text-sm mb-2 font-medium">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleInputChange}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition pr-12"
+                required
+              />
               <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError('');
-                }}
-                className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white transition"
               >
-                {isLogin ? 'Sign up' : 'Sign in'}
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
-            </p>
+            </div>
           </div>
-        </div>
 
-        {/* Features / Demo Info */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="card-glass p-4 text-center">
-            <Users className="h-6 w-6 text-blue-400 mx-auto mb-2" />
-            <p className="text-xs text-white/70">Smart Matching</p>
-          </div>
-          <div className="card-glass p-4 text-center">
-            <Star className="h-6 w-6 text-yellow-400 mx-auto mb-2" />
-            <p className="text-xs text-white/70">Gamification</p>
-          </div>
-          <div className="card-glass p-4 text-center">
-            <Zap className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-            <p className="text-xs text-white/70">Real-time Chat</p>
-          </div>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3 rounded-xl">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 mt-4 rounded-xl font-semibold text-lg text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center"
+          >
+            {loading ? (
+              <div className="flex items-center">
+                <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                {isLogin ? 'Signing in...' : 'Creating account...'}
+              </div>
+            ) : (
+              <>
+                <Zap className="h-5 w-5 mr-2" />
+                {isLogin ? 'Sign In' : 'Sign Up'}
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Toggle */}
+        <div className="text-center mt-8 text-white/70 text-sm">
+          {isLogin ? "Don’t have an account?" : 'Already have an account?'}{' '}
+          <button
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError('');
+            }}
+            className="text-blue-400 hover:text-blue-300 font-semibold transition"
+          >
+            {isLogin ? 'Sign up' : 'Sign in'}
+          </button>
         </div>
-      </div>
+      </motion.div>
+
     </div>
   );
 };

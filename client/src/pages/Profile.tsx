@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { Save, Plus, X, Star, Award } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Profile: React.FC = () => {
   const { user, updateUser } = useAuth();
@@ -36,13 +37,12 @@ const Profile: React.FC = () => {
     setLoading(true);
     setError('');
     setSuccess('');
-
     try {
       const response = await axios.put('/api/profile', formData, { withCredentials: true });
       updateUser(response.data);
-      setSuccess('Profile updated successfully!');
+      setSuccess('✅ Profile updated successfully!');
     } catch (error: any) {
-      setError(error.response?.data?.message || 'Failed to update profile');
+      setError(error.response?.data?.message || '❌ Failed to update profile');
     } finally {
       setLoading(false);
     }
@@ -50,10 +50,7 @@ const Profile: React.FC = () => {
 
   const addSubject = (subject: string) => {
     if (subject && !formData.subjects.includes(subject)) {
-      setFormData({
-        ...formData,
-        subjects: [...formData.subjects, subject]
-      });
+      setFormData({ ...formData, subjects: [...formData.subjects, subject] });
     }
     setNewSubject('');
   };
@@ -67,10 +64,7 @@ const Profile: React.FC = () => {
 
   const addGoal = () => {
     if (newGoal && !formData.goals.includes(newGoal)) {
-      setFormData({
-        ...formData,
-        goals: [...formData.goals, newGoal]
-      });
+      setFormData({ ...formData, goals: [...formData.goals, newGoal] });
     }
     setNewGoal('');
   };
@@ -87,124 +81,118 @@ const Profile: React.FC = () => {
     const updatedSlots = currentSlots.includes(timeSlot)
       ? currentSlots.filter(slot => slot !== timeSlot)
       : [...currentSlots, timeSlot];
-
     setFormData({
       ...formData,
-      schedule: {
-        ...formData.schedule,
-        [day]: updatedSlots
-      }
+      schedule: { ...formData.schedule, [day]: updatedSlots }
     });
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Profile</h1>
-        <p className="text-gray-600">Customize your profile to find the perfect study matches</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white px-4 md:px-8 py-10 relative overflow-hidden">
+      {/* background glow */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-blue-500/10 blur-[100px] rounded-full animate-pulse-slow"></div>
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-500/10 blur-[100px] rounded-full animate-pulse-slow"></div>
       </div>
 
-      {/* Profile Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="card p-6 text-center">
-          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Star className="h-8 w-8 text-primary-600" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900">{user?.points || 0}</h3>
-          <p className="text-gray-600">Points Earned</p>
+      {/* heading */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-10 mb-10 text-center"
+      >
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">Your Profile</h1>
+        <p className="text-white/70 text-base md:text-lg">Customize your profile to get the best study matches ✨</p>
+      </motion.div>
+
+      {/* stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10"
+      >
+        {[
+          { label: 'Points Earned', icon: <Star className="h-7 w-7" />, value: user?.points || 0, color: 'from-yellow-500 to-amber-400' },
+          { label: 'Current Level', icon: <Award className="h-7 w-7" />, value: `Level ${user?.level || 1}`, color: 'from-blue-500 to-indigo-500' },
+          { label: 'Badges', icon: <Award className="h-7 w-7" />, value: user?.badges?.length || 0, color: 'from-purple-500 to-pink-500' },
+        ].map((stat, idx) => (
+          <motion.div
+            key={idx}
+            whileHover={{ scale: 1.05 }}
+            className={`rounded-2xl p-6 text-center bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg`}
+          >
+            <div className={`mx-auto mb-3 w-14 h-14 rounded-full bg-gradient-to-br ${stat.color} flex items-center justify-center text-white shadow-md`}>
+              {stat.icon}
+            </div>
+            <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
+            <p className="text-white/60 text-sm">{stat.label}</p>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* form */}
+      <motion.form
+        onSubmit={handleSubmit}
+        className="space-y-10 relative z-10 max-w-5xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        {/* basic info */}
+        <div className="bg-white/10 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-semibold mb-6">Basic Information</h2>
+          <label className="block text-white/80 text-sm mb-2 font-medium">Full Name</label>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+          />
         </div>
 
-        <div className="card p-6 text-center">
-          <div className="w-16 h-16 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Award className="h-8 w-8 text-accent-600" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900">Level {user?.level || 1}</h3>
-          <p className="text-gray-600">Current Level</p>
-        </div>
+        {/* subjects */}
+        <div className="bg-white/10 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-semibold mb-6">Study Subjects</h2>
 
-        <div className="card p-6 text-center">
-          <div className="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Award className="h-8 w-8 text-secondary-600" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900">{user?.badges?.length || 0}</h3>
-          <p className="text-gray-600">Badges</p>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Basic Info */}
-        <div className="card p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
-          
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Subjects */}
-        <div className="card p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Study Subjects</h2>
-          
-          {/* Current Subjects */}
           <div className="flex flex-wrap gap-2 mb-4">
             {formData.subjects.map((subject) => (
-              <span
-                key={subject}
-                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800"
-              >
+              <span key={subject} className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full flex items-center text-sm">
                 {subject}
-                <button
-                  type="button"
-                  onClick={() => removeSubject(subject)}
-                  className="ml-2 hover:text-primary-600"
-                >
+                <button type="button" onClick={() => removeSubject(subject)} className="ml-2 text-blue-300 hover:text-red-400">
                   <X className="h-3 w-3" />
                 </button>
               </span>
             ))}
           </div>
 
-          {/* Add Custom Subject */}
           <div className="flex gap-2 mb-4">
             <input
               type="text"
               placeholder="Add a subject..."
               value={newSubject}
               onChange={(e) => setNewSubject(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSubject(newSubject))}
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSubject(newSubject))}
+              className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 outline-none"
             />
-            <button
-              type="button"
-              onClick={() => addSubject(newSubject)}
-              className="btn-primary"
-            >
+            <button type="button" onClick={() => addSubject(newSubject)} className="px-4 py-2 bg-blue-600 rounded-xl hover:bg-blue-500 transition">
               <Plus className="h-4 w-4" />
             </button>
           </div>
 
-          {/* Common Subjects */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
             {commonSubjects.map((subject) => (
               <button
                 key={subject}
                 type="button"
                 onClick={() => addSubject(subject)}
                 disabled={formData.subjects.includes(subject)}
-                className={`text-sm py-2 px-3 rounded-lg border transition-colors ${
+                className={`py-2 px-3 text-sm rounded-lg border transition ${
                   formData.subjects.includes(subject)
-                    ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                    : 'bg-white text-gray-700 border-gray-300 hover:bg-primary-50 hover:border-primary-300'
+                    ? 'bg-white/10 text-white/40 cursor-not-allowed'
+                    : 'bg-white/5 hover:bg-blue-500/20 hover:text-blue-300 border-white/10 text-white/80'
                 }`}
               >
                 {subject}
@@ -213,123 +201,96 @@ const Profile: React.FC = () => {
           </div>
         </div>
 
-        {/* Goals */}
-        <div className="card p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Learning Goals</h2>
-          
-          {/* Current Goals */}
+        {/* goals */}
+        <div className="bg-white/10 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-semibold mb-6">Learning Goals</h2>
           <div className="space-y-2 mb-4">
             {formData.goals.map((goal) => (
-              <div
-                key={goal}
-                className="flex items-center justify-between p-3 bg-accent-50 rounded-lg"
-              >
-                <span className="text-sm text-gray-700">{goal}</span>
-                <button
-                  type="button"
-                  onClick={() => removeGoal(goal)}
-                  className="text-gray-400 hover:text-red-500"
-                >
+              <div key={goal} className="flex justify-between items-center bg-blue-500/10 rounded-xl px-4 py-2">
+                <span className="text-sm">{goal}</span>
+                <button onClick={() => removeGoal(goal)} type="button" className="text-white/50 hover:text-red-400 transition">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             ))}
           </div>
-
-          {/* Add Goal */}
           <div className="flex gap-2">
             <input
               type="text"
               placeholder="Add a learning goal..."
               value={newGoal}
               onChange={(e) => setNewGoal(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addGoal())}
+              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addGoal())}
+              className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 outline-none"
             />
-            <button
-              type="button"
-              onClick={addGoal}
-              className="btn-primary"
-            >
+            <button type="button" onClick={addGoal} className="px-4 py-2 bg-blue-600 rounded-xl hover:bg-blue-500 transition">
               <Plus className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        {/* Schedule */}
-        <div className="card p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Study Schedule</h2>
-          <p className="text-gray-600 mb-6">Select your preferred study times to find compatible study partners</p>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th className="text-left text-sm font-medium text-gray-700 pb-3"></th>
+        {/* schedule */}
+        <div className="bg-white/10 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl overflow-x-auto">
+          <h2 className="text-2xl font-semibold mb-6">Study Schedule</h2>
+          <p className="text-white/70 mb-4 text-sm">Select preferred time slots for studying to match with peers</p>
+
+          <table className="w-full text-sm">
+            <thead>
+              <tr>
+                <th></th>
+                {timeSlots.map((slot) => (
+                  <th key={slot} className="px-2 py-2 text-center text-xs text-white/70">
+                    {slot.split(' ')[0]}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {weekDays.map((day) => (
+                <tr key={day}>
+                  <td className="py-2 pr-4 text-white/80 font-medium">{day}</td>
                   {timeSlots.map((slot) => (
-                    <th key={slot} className="text-center text-xs font-medium text-gray-700 pb-3 px-2 min-w-0">
-                      {slot.split(' ')[0]}
-                    </th>
+                    <td key={`${day}-${slot}`} className="py-2 px-2 text-center">
+                      <button
+                        type="button"
+                        onClick={() => updateSchedule(day, slot)}
+                        className={`w-6 h-6 rounded-md border transition-colors ${
+                          formData.schedule[day]?.includes(slot)
+                            ? 'bg-blue-500 border-blue-400'
+                            : 'border-white/20 hover:border-blue-400'
+                        }`}
+                      />
+                    </td>
                   ))}
                 </tr>
-              </thead>
-              <tbody>
-                {weekDays.map((day) => (
-                  <tr key={day}>
-                    <td className="text-sm font-medium text-gray-700 py-2 pr-4">
-                      {day}
-                    </td>
-                    {timeSlots.map((slot) => (
-                      <td key={`${day}-${slot}`} className="text-center py-2 px-2">
-                        <button
-                          type="button"
-                          onClick={() => updateSchedule(day, slot)}
-                          className={`w-6 h-6 rounded border-2 transition-colors ${
-                            formData.schedule[day]?.includes(slot)
-                              ? 'bg-primary-500 border-primary-500'
-                              : 'border-gray-300 hover:border-primary-300'
-                          }`}
-                        />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        {/* Save Button */}
-        <div className="flex justify-end space-x-4">
-          {success && (
-            <div className="text-accent-600 bg-accent-50 px-4 py-2 rounded-lg">
-              {success}
-            </div>
-          )}
-          {error && (
-            <div className="text-red-600 bg-red-50 px-4 py-2 rounded-lg">
-              {error}
-            </div>
-          )}
+        {/* footer buttons */}
+        <div className="flex flex-col sm:flex-row justify-end gap-3">
+          {success && <div className="text-green-400 bg-green-500/10 px-4 py-2 rounded-xl">{success}</div>}
+          {error && <div className="text-red-400 bg-red-500/10 px-4 py-2 rounded-xl">{error}</div>}
+
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl font-semibold text-white hover:opacity-90 transition disabled:opacity-50"
           >
             {loading ? (
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              <>
+                <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
                 Saving...
-              </div>
+              </>
             ) : (
-              <div className="flex items-center">
-                <Save className="h-4 w-4 mr-2" />
-                Save Profile
-              </div>
+              <>
+                <Save className="h-5 w-5" /> Save Profile
+              </>
             )}
           </button>
         </div>
-      </form>
+      </motion.form>
     </div>
   );
 };
