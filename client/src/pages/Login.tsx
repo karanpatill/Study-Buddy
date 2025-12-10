@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { BookOpen, Eye, EyeOff, Zap, Users, Star } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { BookOpen, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Login: React.FC = () => {
@@ -46,154 +45,205 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-10 bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] relative overflow-hidden">
-      {/* ✨ Background Animation */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] animate-pulse-slow"></div>
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px] animate-pulse-slow"></div>
-      </div>
+    <div className="min-h-screen flex">
+      {/* Left Side - Form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-white">
+        <div className="w-full max-w-md">
+          {/* Logo and Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-xl font-semibold text-gray-900">Study Buddy</span>
+            </div>
+            <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+              {isLogin ? 'Welcome back' : 'Create an account'}
+            </h1>
+            <p className="text-gray-600">
+              {isLogin 
+                ? 'Enter your credentials to access your account' 
+                : 'Start your learning journey today'
+              }
+            </p>
+          </div>
 
-      {/* 🌟 Main Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="relative z-10 w-full max-w-md md:max-w-lg lg:max-w-md p-8 md:p-10 rounded-3xl backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl"
-      >
-        {/* Header */}
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 shadow-lg shadow-blue-500/30 mb-4"
+          {/* Demo Login Button */}
+          <button
+            onClick={handleDemoLogin}
+            disabled={loading}
+            className="w-full py-2.5 px-4 mb-6 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <BookOpen className="h-8 w-8 md:h-10 md:w-10 text-white" />
-          </motion.div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">Study Buddy</h1>
-          <p className="text-white/70 text-sm md:text-base font-medium">
-            {isLogin ? 'Welcome back to your study world ✨' : 'Create your learning journey 🚀'}
-          </p>
-        </div>
+            <BookOpen className="h-4 w-4" />
+            Try Demo Account
+          </button>
 
-        {/* Demo Login */}
-        <button
-          onClick={handleDemoLogin}
-          disabled={loading}
-          className="w-full py-3 rounded-xl mb-8 font-semibold text-white bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-indigo-500/30 flex items-center justify-center"
-        >
-          <Zap className="h-5 w-5 mr-2" />
-          Try Demo Account
-        </button>
+          {/* Divider */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with</span>
+            </div>
+          </div>
 
-        {/* Divider */}
-        <div className="flex items-center mb-8">
-          <div className="flex-grow border-t border-white/10"></div>
-          <span className="px-4 text-white/50 text-sm">or continue with email</span>
-          <div className="flex-grow border-t border-white/10"></div>
-        </div>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+                  Full Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="John Doe"
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+                  required
+                />
+              </div>
+            )}
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {!isLogin && (
             <div>
-              <label htmlFor="name" className="block text-white/80 text-sm mb-2 font-medium">
-                Full Name
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                Email Address
               </label>
               <input
-                id="name"
-                name="name"
-                type="text"
-                value={formData.name}
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
                 onChange={handleInputChange}
-                placeholder="John Doe"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                placeholder="you@example.com"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
                 required
               />
             </div>
-          )}
 
-          <div>
-            <label htmlFor="email" className="block text-white/80 text-sm mb-2 font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="you@example.com"
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-white/80 text-sm mb-2 font-medium">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                value={formData.password}
-                onChange={handleInputChange}
-                placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition pr-12"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white transition"
-              >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
-          </div>
-
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-300 text-sm px-4 py-3 rounded-xl">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 mt-4 rounded-xl font-semibold text-lg text-white bg-gradient-to-r from-indigo-500 to-blue-500 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center"
-          >
-            {loading ? (
-              <div className="flex items-center">
-                <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                {isLogin ? 'Signing in...' : 'Creating account...'}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                {isLogin && (
+                  <button
+                    type="button"
+                    className="text-sm text-slate-700 hover:text-slate-900 font-medium"
+                  >
+                    Forgot password?
+                  </button>
+                )}
               </div>
-            ) : (
-              <>
-                <Zap className="h-5 w-5 mr-2" />
-                {isLogin ? 'Sign In' : 'Sign Up'}
-              </>
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Enter your password"
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3 rounded-lg">
+                {error}
+              </div>
             )}
-          </button>
-        </form>
 
-        {/* Toggle */}
-        <div className="text-center mt-8 text-white/70 text-sm">
-          {isLogin ? "Don’t have an account?" : 'Already have an account?'}{' '}
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError('');
-            }}
-            className="text-blue-400 hover:text-blue-300 font-semibold transition"
-          >
-            {isLogin ? 'Sign up' : 'Sign in'}
-          </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2.5 px-4 mt-6 rounded-lg font-medium text-white bg-slate-900 hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                  {isLogin ? 'Signing in...' : 'Creating account...'}
+                </>
+              ) : (
+                <>
+                  {isLogin ? 'Sign In' : 'Create Account'}
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Toggle Between Login/Signup */}
+          <p className="text-center mt-6 text-sm text-gray-600">
+            {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
+            <button
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError('');
+              }}
+              className="text-slate-900 hover:text-slate-700 font-medium"
+            >
+              {isLogin ? 'Sign up' : 'Sign in'}
+            </button>
+          </p>
         </div>
-      </motion.div>
+      </div>
 
+      {/* Right Side - Visual Pattern */}
+      <div className="hidden lg:flex lg:flex-1 bg-slate-50 relative overflow-hidden">
+        {/* Geometric pattern background */}
+        <div className="absolute inset-0">
+          <svg className="absolute w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                <circle cx="16" cy="16" r="1" fill="#cbd5e1" opacity="0.3"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)"/>
+          </svg>
+          
+          {/* Abstract shapes */}
+          <div className="absolute top-20 left-20 w-32 h-32 border-2 border-slate-300 rounded-lg transform rotate-12"></div>
+          <div className="absolute top-40 right-32 w-24 h-24 bg-slate-200 rounded-full opacity-40"></div>
+          <div className="absolute bottom-32 left-40 w-40 h-40 border-2 border-slate-300 transform -rotate-6"></div>
+          <div className="absolute bottom-20 right-20 w-28 h-28 bg-slate-300 rounded-lg opacity-30 transform rotate-45"></div>
+        </div>
+
+        {/* Content overlay */}
+        <div className="relative z-10 flex items-center justify-center p-12 w-full">
+          <div className="max-w-lg">
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
+              <blockquote className="space-y-4">
+                <p className="text-lg text-gray-700 leading-relaxed">
+                  "This platform will revolutionize the way students learn and collaborate. The intuitive design and engaging features make studying enjoyable and effective."
+                </p>
+                <footer className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                  <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center text-white font-medium text-sm">
+                    KP
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900">Karan Patil</div>
+                    <div className="text-sm text-gray-600">Computer Science, DYP</div>
+                  </div>
+                </footer>
+              </blockquote>
+            </div>
+
+        
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

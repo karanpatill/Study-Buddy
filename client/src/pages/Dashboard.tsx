@@ -8,12 +8,11 @@ import {
   Star,
   Trophy,
   Target,
-  Zap,
   TrendingUp,
   Award,
-  Sparkles
+  ChevronRight,
+  Settings
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface StudyBuddy {
   _id: string;
@@ -57,189 +56,301 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[80vh]">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-white/70 text-lg">Loading your dashboard...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-300 border-t-blue-600 mx-auto mb-3"></div>
+          <p className="text-gray-600 text-sm">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white px-4 md:px-8 py-10 relative overflow-hidden">
-      {/* background glows */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-blue-500/10 blur-[100px] rounded-full animate-pulse-slow"></div>
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-purple-500/10 blur-[100px] rounded-full animate-pulse-slow"></div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900">
+                Welcome back, {user?.name}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Here's your learning progress today
+              </p>
+            </div>
+            <Link
+              to="/profile"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <Settings className="h-4 w-4" />
+              Settings
+            </Link>
+          </div>
+        </div>
       </div>
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative z-10 mb-10 text-center"
-      >
-        <div className="flex items-center justify-center mb-4">
-          <Sparkles className="h-8 w-8 text-yellow-400 mr-3 animate-pulse" />
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-            Welcome back, <span className="text-gradient">{user?.name}</span>!
-          </h1>
-        </div>
-        <p className="text-white/70 text-base md:text-lg">
-          Ready to accelerate your learning journey today? ✨
-        </p>
-      </motion.div>
-
-      {/* Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-10 relative z-10"
-      >
-        {[
-          { label: 'Points Earned', icon: <Star className="h-7 w-7" />, value: user?.points || 0, color: 'from-yellow-500 to-amber-400' },
-          { label: 'Level', icon: <Trophy className="h-7 w-7" />, value: user?.level || 1, color: 'from-purple-500 to-pink-500' },
-          { label: 'Study Matches', icon: <Users className="h-7 w-7" />, value: matches.length, color: 'from-blue-500 to-cyan-500' },
-          { label: 'Badges Earned', icon: <Award className="h-7 w-7" />, value: user?.badges?.length || 0, color: 'from-green-500 to-emerald-400' }
-        ].map((stat, idx) => (
-          <motion.div
-            key={idx}
-            whileHover={{ scale: 1.05 }}
-            className="rounded-2xl p-6 text-center bg-white/10 backdrop-blur-lg border border-white/10 shadow-lg"
-          >
-            <div className={`mx-auto mb-3 w-14 h-14 rounded-full bg-gradient-to-br ${stat.color} flex items-center justify-center text-white shadow-md`}>
-              {stat.icon}
-            </div>
-            <h3 className="text-2xl font-bold mb-1">{stat.value}</h3>
-            <p className="text-white/60 text-sm">{stat.label}</p>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* AI Study Matches */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-white/10 backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-2xl shadow-xl relative z-10"
-      >
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-          <div className="flex items-center justify-center md:justify-start">
-            <Users className="h-6 w-6 text-blue-400 mr-3" />
-            <h2 className="text-2xl font-semibold">AI Study Matches</h2>
-          </div>
-          <Link to="/profile" className="text-blue-400 hover:text-blue-300 text-sm font-medium transition">
-            Optimize Matching
-          </Link>
-        </div>
-
-        {matches.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
-              <Users className="h-10 w-10 text-white" />
-            </div>
-            <p className="text-white/70 mb-4 text-lg">No matches yet — complete your profile!</p>
-            <Link to="/profile" className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl font-semibold text-white hover:opacity-90 transition">
-              <Target className="h-4 w-4 mr-2 inline" /> Complete Profile
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {matches.map((buddy, index) => (
-              <motion.div
-                key={buddy._id}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white/5 border border-white/10 rounded-xl p-4 md:p-5 hover:bg-white/10 transition-all duration-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center">
-                    <Users className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold text-white text-lg">{buddy.name}</h3>
-                      {buddy.isOnline && <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>}
-                    </div>
-                    <p className="text-sm text-white/60">
-                      {buddy.subjects.slice(0, 2).join(', ')}
-                      {buddy.subjects.length > 2 && ` +${buddy.subjects.length - 2} more`}
-                    </p>
-                    <div className="flex items-center mt-2">
-                      <div className="w-32 bg-white/10 rounded-full h-1.5 mr-2">
-                        <div
-                          className="bg-gradient-to-r from-green-400 to-blue-500 h-1.5 rounded-full"
-                          style={{ width: `${buddy.matchScore}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-xs text-white/70">{buddy.matchScore}%</span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleStartChat(buddy._id)}
-                  className="flex items-center justify-center px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl font-medium text-sm hover:opacity-90 transition"
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" /> Chat
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </motion.div>
-
-      {/* Quick Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="mt-12 relative z-10"
-      >
-        <h2 className="text-2xl font-semibold mb-6 flex items-center justify-center md:justify-start">
-          <Zap className="h-6 w-6 text-yellow-400 mr-3" />
-          Quick Actions
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[
             {
-              to: '/chat',
-              icon: <MessageCircle className="h-10 w-10 text-blue-400 mb-4 group-hover:scale-110 transition-transform" />,
-              title: 'Start Chatting',
-              desc: 'Connect with your study buddies instantly'
+              label: 'Total Points',
+              value: user?.points || 0,
+              icon: Star,
+              color: 'text-amber-600',
+              bgColor: 'bg-amber-50',
+              change: '+12%'
             },
             {
-              to: '/profile',
-              icon: <Target className="h-10 w-10 text-purple-400 mb-4 group-hover:scale-110 transition-transform" />,
-              title: 'Update Goals',
-              desc: 'Refine your learning objectives'
+              label: 'Current Level',
+              value: user?.level || 1,
+              icon: Trophy,
+              color: 'text-purple-600',
+              bgColor: 'bg-purple-50',
+              change: 'Level up'
             },
             {
-              to: '/leaderboard',
-              icon: <Trophy className="h-10 w-10 text-yellow-400 mb-4 group-hover:scale-110 transition-transform" />,
-              title: 'View Leaderboard',
-              desc: 'See how you rank among peers'
+              label: 'Study Matches',
+              value: matches.length,
+              icon: Users,
+              color: 'text-blue-600',
+              bgColor: 'bg-blue-50',
+              change: `${matches.length} active`
+            },
+            {
+              label: 'Badges Earned',
+              value: user?.badges?.length || 0,
+              icon: Award,
+              color: 'text-green-600',
+              bgColor: 'bg-green-50',
+              change: 'View all'
             }
-          ].map((action, i) => (
-            <Link
-              key={i}
-              to={action.to}
-              className="p-6 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/10 text-center hover:bg-white/20 transition-all duration-300 group"
+          ].map((stat, idx) => (
+            <div
+              key={idx}
+              className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
             >
-              <div className="flex flex-col items-center">
-                {action.icon}
-                <h3 className="font-semibold text-white mb-1 text-lg">{action.title}</h3>
-                <p className="text-sm text-white/60">{action.desc}</p>
+              <div className="flex items-center justify-between mb-4">
+                <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                  <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                </div>
+                <span className="text-xs font-medium text-gray-500">
+                  {stat.change}
+                </span>
               </div>
-            </Link>
+              <div className="text-2xl font-semibold text-gray-900 mb-1">
+                {stat.value}
+              </div>
+              <div className="text-sm text-gray-600">
+                {stat.label}
+              </div>
+            </div>
           ))}
         </div>
-      </motion.div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Study Matches - Takes 2 columns */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Recommended Study Partners
+                </h2>
+                <Link
+                  to="/profile"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                >
+                  Update preferences
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              {matches.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Users className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <p className="text-gray-900 font-medium mb-1">No matches yet</p>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Complete your profile to find study partners
+                  </p>
+                  <Link
+                    to="/profile"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                  >
+                    <Target className="h-4 w-4" />
+                    Complete Profile
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {matches.map((buddy) => (
+                    <div
+                      key={buddy._id}
+                      className="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all"
+                    >
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        {/* Avatar */}
+                        <div className="relative flex-shrink-0">
+                          <div className="w-10 h-10 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-sm font-medium">
+                            {getInitials(buddy.name)}
+                          </div>
+                          {buddy.isOnline && (
+                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
+                          )}
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-medium text-gray-900 truncate">
+                              {buddy.name}
+                            </h3>
+                            <span className="px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded">
+                              {buddy.matchScore}% match
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 truncate">
+                            {buddy.subjects.slice(0, 3).join(', ')}
+                            {buddy.subjects.length > 3 && ` +${buddy.subjects.length - 3}`}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Action Button */}
+                      <button
+                        onClick={() => handleStartChat(buddy._id)}
+                        className="ml-4 flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        Chat
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Actions Sidebar */}
+          <div className="space-y-6">
+            {/* Quick Actions Card */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Quick Actions
+              </h2>
+              <div className="space-y-2">
+                {[
+                  {
+                    to: '/chat',
+                    icon: MessageCircle,
+                    title: 'Messages',
+                    desc: 'Chat with study partners',
+                    color: 'text-blue-600',
+                    bgColor: 'bg-blue-50'
+                  },
+                  {
+                    to: '/profile',
+                    icon: Target,
+                    title: 'Update Goals',
+                    desc: 'Manage learning objectives',
+                    color: 'text-purple-600',
+                    bgColor: 'bg-purple-50'
+                  },
+                  {
+                    to: '/leaderboard',
+                    icon: TrendingUp,
+                    title: 'Leaderboard',
+                    desc: 'Check your ranking',
+                    color: 'text-green-600',
+                    bgColor: 'bg-green-50'
+                  }
+                ].map((action, i) => (
+                  <Link
+                    key={i}
+                    to={action.to}
+                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+                  >
+                    <div className={`p-2 rounded-lg ${action.bgColor}`}>
+                      <action.icon className={`h-5 w-5 ${action.color}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900">
+                        {action.title}
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        {action.desc}
+                      </div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Activity Summary Card */}
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Recent Activity
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Star className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900">
+                      Earned 50 points
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      2 hours ago
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Users className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900">
+                      New study match found
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      5 hours ago
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Trophy className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900">
+                      Reached Level {user?.level || 1}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      1 day ago
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
